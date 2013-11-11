@@ -31,6 +31,7 @@ int main(void)
   //TA0CCTL1 |= CCIE;
   //TA0CCTL2 |= CCIE;
   //TA0CCTL3 |= CCIE;
+  //testcall?
   Timer_CorrectSync(20);
   // never return!
   while(1)

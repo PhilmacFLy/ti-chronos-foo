@@ -5,7 +5,6 @@
                functionality. It's basically a one-task-OS
 */
 
-
 #ifndef __SCHEDULER_H__
 # define __SCHEDULER_H__
 
