@@ -16,3 +16,7 @@
 *.exe
 *.out
 *.app
+
+#Release and Debug folder
+Project/Debug/
+Project/Release/
