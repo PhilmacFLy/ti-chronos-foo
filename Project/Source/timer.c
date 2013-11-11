@@ -14,10 +14,11 @@
 
 uint16_t nextnummicroticks = NUM_MICROTICKS;
 
-const EventMaskType TimerEvents[3] = {
+const EventMaskType TimerEvents[4] = {
   EVENT_COM_SLOT_RX_START,     // Timer 0 CCR1
   EVENT_COM_SLOT_TX_START,     // Timer 0 CCR2
   EVENT_COM_SLOT_OPEN_SYNC_RX, // Timer 0 CCR3
+  EVENT_DISPLAY_TICK,          // Timer 0 CCR4
 };
 
 // function to initialize the timer
@@ -32,6 +33,10 @@ void Timer_Init()
   // others will be enabled with Timer_SetMode API
   TA0CCTL0 |= CCIE;
   
+  // enable interrupt for CCR4 (Capture Compare Register 4)
+  // handles the display timings
+  TA0CCTL4 |= CCIE;
+  
   // ACLK as clock source, with input divider /2
   TA0CTL = TASSEL__ACLK | ID__2;
   
@@ -42,6 +47,9 @@ void Timer_Init()
   TA0CCR1 = MICROTICK_RX_START;
   TA0CCR2 = MICROTICK_TX_START;
   TA0CCR3 = MICROTICK_OPEN_SYNC_RX;
+  
+  // load CCR4 with value for display handling
+  TA0CCR4 = MICROTICK_DSP_START;
   
   // Timer 1 used for "wait" API
   // load zero to count register
@@ -145,6 +153,9 @@ __interrupt void TIMER0_A0_ISR(void)
   TA0CCR0 = nextnummicroticks;
   nextnummicroticks = NUM_MICROTICKS;
   
+  // reload CCR4
+  TA0CCR4 = MICROTICK_DSP_START;
+  
   // here we start the next communication slot
   SetEvent(EVENT_COM_SLOT_START);
   
@@ -167,6 +178,11 @@ __interrupt void TIMER0_A1_5_ISR(void)
   // Timer 0 Overflow = 0x0E
   // mapped to 0x00 - 0x06
   SetEvent( TimerEvents[(TA0IV >> 1) - 1] );
+  if (0x08 == TA0IV)
+  {
+    // reload CCR4
+    TA0CCR4 += MICROTICK_DSP_CYCLETIME;
+  }
   LeaveSleep();
 }
 

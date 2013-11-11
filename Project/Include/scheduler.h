@@ -30,12 +30,12 @@ typedef uint16_t EventMaskType;
 # define EVENT_UNUSED0x0080             ((EventMaskType) 0x0080)
 # define EVENT_UNUSED0x0100             ((EventMaskType) 0x0100)
 # define EVENT_UNUSED0x0200             ((EventMaskType) 0x0200)
-# define EVENT_UNUSED0x0400             ((EventMaskType) 0x0400)
-# define EVENT_UNUSED0x0800             ((EventMaskType) 0x0800)
-# define EVENT_UNUSED0x1000             ((EventMaskType) 0x1000)
-# define EVENT_UNUSED0x2000             ((EventMaskType) 0x2000)
-# define EVENT_UNUSED0x4000             ((EventMaskType) 0x4000)
-# define EVENT_UNUSED0x8000             ((EventMaskType) 0x8000)
+# define EVENT_BUTTON_DOWN              ((EventMaskType) 0x0400)
+# define EVENT_BUTTON_NUM               ((EventMaskType) 0x0800)
+# define EVENT_BUTTON_STAR              ((EventMaskType) 0x1000)
+# define EVENT_BUTTON_BACKLIGHT         ((EventMaskType) 0x2000)
+# define EVENT_BUTTON_UP                ((EventMaskType) 0x4000)
+# define EVENT_DISPLAY_TICK             ((EventMaskType) 0x8000)
 
 // simple macro implementation, deadlocks if not used properly!
 // has to be changed...
