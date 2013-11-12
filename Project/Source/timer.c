@@ -37,8 +37,8 @@ void Timer_Init()
   // handles the display timings
   TA0CCTL4 |= CCIE;
   
-  // ACLK as clock source, with input divider /2
-  TA0CTL = TASSEL__ACLK | ID__2;
+  // ACLK as clock source, with input divider /1
+  TA0CTL = TASSEL__ACLK | ID__1;
   
   // load CCR0 with number of microticks
   // and other CCR with corresponding values

@@ -10,16 +10,17 @@
 #ifndef __TIMER_H__
 # define __TIMER_H__
 
-// clocking: 32768 Hz divisor: 2
-//# define NUM_MICROTICKS 0x7FFFu
-# define NUM_MICROTICKS 0x3FFFu // 0x4000 == 32768 / 2
+// clocking: 32768 Hz divisor: 1
+// timebase: 30,517578125 us
+# define NUM_MICROTICKS 0x7FFFu // 0x8000 == 32768
 
-# define MICROTICK_RX_START       0x0FE8u // 24 ticks before TX START
-# define MICROTICK_TX_START       0x1000
-# define MICROTICK_OPEN_SYNC_RX   0x3000u
+// scheduling defines
+# define MICROTICK_RX_START       0x1FD6u // a bit more than 1,2 ms before TX START
+# define MICROTICK_TX_START       0x2000
+# define MICROTICK_OPEN_SYNC_RX   0x6000u
 
-# define MICROTICK_DSP_START      0x0600u
-# define MICROTICK_DSP_CYCLETIME  0x0800u
+# define MICROTICK_DSP_START      0x0A00u
+# define MICROTICK_DSP_CYCLETIME  0x1000u
 
 /*
 precalculated scheduling
@@ -32,7 +33,7 @@ assumptions:
             |                                     Communication
     |     |     |     |     |     |     |     |   Display Update (a bit later than 0x400)
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-0    800   1000  1800  2000  2800  3000  3800  4000
+0    1000  2000  3000  4000  5000  6000  7000  8000
 */
 
 void Timer_Init();
