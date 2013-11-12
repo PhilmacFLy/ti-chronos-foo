@@ -1,6 +1,6 @@
 
 /*
-  Filename: timer.c
+  Filename: scheduler.c
   Description: This file contains the code and functions for the scheduler.
                Additionally, the functions to resync are also there.
 */
