@@ -12,7 +12,7 @@
 # define TEMP_F 0x1
 
 void Temperature_Init();
-uint8_t Temperature_Get(uint8_t TEMP_ART);
+sint16_t Temperature_Get(uint8_t TEMP_ART);
 
 #endif /* __TEMPERATURE_H__ */
  

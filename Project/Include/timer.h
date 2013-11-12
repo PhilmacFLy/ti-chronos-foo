@@ -11,14 +11,15 @@
 # define __TIMER_H__
 
 // clocking: 32768 Hz divisor: 2
-# define NUM_MICROTICKS 0x7FFFu;
+//# define NUM_MICROTICKS 0x7FFFu
+# define NUM_MICROTICKS 0x3FFFu // 0x4000 == 32768 / 2
 
-# define MICROTICK_RX_START       0x1FE8 // 24 ticks before TX START
-# define MICROTICK_TX_START       0x2000
-# define MICROTICK_OPEN_SYNC_RX   0x6000
+# define MICROTICK_RX_START       0x0FE8u // 24 ticks before TX START
+# define MICROTICK_TX_START       0x1000
+# define MICROTICK_OPEN_SYNC_RX   0x3000u
 
-# define MICROTICK_DSP_START      0x1000
-# define MICROTICK_DSP_CYCLETIME  0x2000
+# define MICROTICK_DSP_START      0x0800u
+# define MICROTICK_DSP_CYCLETIME  0x1000u
 
 void Timer_Init();
 void Timer_Start(uint16_t position);

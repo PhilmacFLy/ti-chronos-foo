@@ -7,38 +7,49 @@
 
 #include "includes.h"
 #include "com.h"
-// #include "scheduler.h"
+#include "scheduler.h"
 #include "temperature.h"
-#include "cc430x613x.h"
 
 volatile long temp;
 
 void Temperature_Init()
 {
+    //adc_result = adc12_single_conversion(REFVSEL_0, ADC12SHT0_8, ADC12INCH_10);
   /* Initialize the shared reference module */ 
   REFCTL0 |= REFMSTR + REFVSEL_0 + REFON;    // Enable internal 1.5V reference
   
   /* Initialize ADC12_A */ 
-  ADC12CTL0 = ADC12SHT0_8 + ADC12ON;		// Set sample time 
+  ADC12CTL0 = ADC12SHT0_8 + ADC12ON;        // Set sample time 
   ADC12CTL1 = ADC12SHP;                     // Enable sample timer
   ADC12MCTL0 = ADC12SREF_1 + ADC12INCH_10;  // ADC input ch A10 => temp sense 
   ADC12IE = 0x001;                          // ADC_IFG upon conv result-ADCMEMO
   
-  __delay_cycles(75);                       // 35us delay to allow Ref to settle
+  __delay_cycles(35);                       // 35us delay to allow Ref to settle
                                             // based on default DCO frequency.
                                             // See Datasheet for typical settle
-                                            // time.
+                                            // time. In our case probably not
+                                            // necessary because of "long"
+                                            // startup phase?
   ADC12CTL0 |= ADC12ENC;
 }
 
 // Start Conversion
-uint8_t Temperature_Get(uint8_t TEMP_ART)
+sint16_t Temperature_Get(uint8_t TEMP_ART)
 {
+    sint16_t temp2;
     ADC12CTL0 |= ADC12SC;                   // Sampling and conversion start
-
-    __bis_SR_register(LPM4_bits + GIE);     // LPM4 with interrupts enabled
-    __no_operation();
-    if (TEMP_ART = TEMP_C 
+    
+    // LPM3 with interrupts enabled
+    EnableInterrupts();
+    EnterSleep();
+    
+    // other calculation?
+    // ((A10/4096*1500mV) - 680mV)*(1/2.25mV) = (A10/4096*667) - 302
+    // = (A10 - 1855) * (667 / 4096)
+    temp2 = (((sint32_t) ((sint32_t) temp - 1855)) * 667) / 4096;
+    temp2 = temp2 + 1;
+    
+    if (TEMP_ART == TEMP_C) 
     {
     // Temperature in Celsius
     // ((A10/4096*1500mV) - 894mV)*(1/3.66mV) = (A10/4096*410) - 244
@@ -53,11 +64,21 @@ uint8_t Temperature_Get(uint8_t TEMP_ART)
     temp = ((temp - 2264) * 738) / 4096;
     }
     __no_operation();                       // SET BREAKPOINT HERE
+    return (uint16_t) temp;
 }
 
 #pragma vector=ADC12_VECTOR
 __interrupt void ADC12ISR (void)
 {
+  // better code
+  
+  if (6 == ADC12IV) // ADC12IFG0
+  {
+    temp = ADC12MEM0;
+    LeaveSleep();
+  }
+  
+  /*
   switch(__even_in_range(ADC12IV,34))
   {
   case  0: break;                           // Vector  0:  No interrupt
@@ -65,7 +86,7 @@ __interrupt void ADC12ISR (void)
   case  4: break;                           // Vector  4:  ADC timing overflow
   case  6:                                  // Vector  6:  ADC12IFG0
     temp = ADC12MEM0;                       // Move results, IFG is cleared
-    __bic_SR_register_on_exit(LPM4_bits);   // Exit active CPU
+    LeaveSleep();   // Exit active CPU
     break;
   case  8: break;                           // Vector  8:  ADC12IFG1
   case 10: break;                           // Vector 10:  ADC12IFG2
@@ -83,4 +104,5 @@ __interrupt void ADC12ISR (void)
   case 34: break;                           // Vector 34:  ADC12IFG14
   default: break;
   }
+  */
 }

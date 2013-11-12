@@ -7,16 +7,24 @@
 #include "includes.h"
 #include "timer.h"
 #include "scheduler.h"
+#include "button.h"
+#include "temperature.h"
 #include "main.h"
 
 int main(void)
 {
+  uint16_t x;
   // Stop watchdog timer to prevent time out reset
   WDTCTL = WDTPW | WDTHOLD;
   
   // mostly not done this code here
   // uC Initialisation
   Timer_Init();
+  Button_Init();
+  Temperature_Init();
+  x = Temperature_Get(TEMP_C);
+  x = x;
+  
   //Timer_Start();
   
   // enable interrupts

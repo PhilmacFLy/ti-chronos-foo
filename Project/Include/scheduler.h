@@ -9,12 +9,16 @@
 # define __SCHEDULER_H__
 
 // defines for sleep/wakeup
-# define EnterSleep() __bis_SR_register(LPM3_bits)
-# define LeaveSleep() __bic_SR_register_on_exit(LPM3_bits)
+# define EnterSleep() __bis_SR_register(LPM3_bits); \
+                      __no_operation()
+# define LeaveSleep() __bic_SR_register_on_exit(LPM3_bits); \
+                      __no_operation()
 
 // defines for enabling/disabling interrupts
-# define EnableInterrupts() __bis_SR_register(GIE)
-# define DisableInterrupts() __bic_SR_register(GIE)
+# define EnableInterrupts() __bis_SR_register(GIE); \
+                            __no_operation()
+# define DisableInterrupts() __bic_SR_register(GIE); \
+                             __no_operation()
 
 typedef uint16_t EventMaskType;
 

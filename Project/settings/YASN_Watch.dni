@@ -20,7 +20,7 @@ NextState1=0
 Break=0
 State Storage=0
 [DebugChecksum]
-Checksum=-85452992
+Checksum=-561745086
 [CallStack]
 ShowArgs=0
 [Disassembly]
@@ -70,12 +70,7 @@ Category=_ 0
 LoggingEnabled=_ 0
 LogFile=_ ""
 [Breakpoints]
-Bp0=_ "STD_CODE" "{$PROJ_DIR$\Source\temperature.c}.96.5" 0 0 0 0 "" 0 ""
-Bp1=_ "STD_CODE" "{$PROJ_DIR$\Source\temperature.c}.82.5" 0 0 0 0 "" 0 ""
-Bp2=_ "STD_CODE" "{$PROJ_DIR$\Source\temperature.c}.66.3" 0 0 0 0 "" 0 ""
-Bp3=_ "STD_CODE" "{$PROJ_DIR$\Source\scheduler.c}.28.3" 1 0 0 0 "" 0 ""
-Bp4=_ "STD_CODE" "{$PROJ_DIR$\Source\main.c}.35.3" 1 0 0 0 "" 0 ""
-Count=5
+Count=0
 [FET]
 Clock mode=14
 Extended Clock mode=-1

@@ -2028,6 +2028,9 @@
     <name>$PROJ_DIR$\Source\scheduler.c</name>
   </file>
   <file>
+    <name>$PROJ_DIR$\Source\temperature.c</name>
+  </file>
+  <file>
     <name>$PROJ_DIR$\Source\timer.c</name>
   </file>
 </project>
