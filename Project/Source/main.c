@@ -22,6 +22,10 @@ int main(void)
   Timer_Init();
   Button_Init();
   Temperature_Init();
+  Scheduler_Init();
+  
+  
+  
   x = Temperature_Get(TEMP_C);
   x = x;
   
