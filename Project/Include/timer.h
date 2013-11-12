@@ -18,8 +18,22 @@
 # define MICROTICK_TX_START       0x1000
 # define MICROTICK_OPEN_SYNC_RX   0x3000u
 
-# define MICROTICK_DSP_START      0x0800u
-# define MICROTICK_DSP_CYCLETIME  0x1000u
+# define MICROTICK_DSP_START      0x0600u
+# define MICROTICK_DSP_CYCLETIME  0x0800u
+
+/*
+precalculated scheduling
+
+assumptions:
+- no job needs more than ~62500 cycles (at 1 MHz)
+- if not, higher cpu frequency necessary
+
+                                    |             Open RX Sync Slot
+            |                                     Communication
+    |     |     |     |     |     |     |     |   Display Update (a bit later than 0x400)
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+0    800   1000  1800  2000  2800  3000  3800  4000
+*/
 
 void Timer_Init();
 void Timer_Start(uint16_t position);
