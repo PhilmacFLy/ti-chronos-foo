@@ -10,6 +10,14 @@
 #include "event.h"
 #include "button.h"
 
+const EventMaskType ButtonEvents[] = {
+  EVENT_BUTTON_DOWN,         // Port 2.0
+  EVENT_BUTTON_NUM,          // Port 2.1
+  EVENT_BUTTON_STAR,         // Port 2.2
+  EVENT_BUTTON_BACKLIGHT,    // Port 2.3
+  EVENT_BUTTON_UP            // Port 2.4
+};
+
 // initialize button code
 void Button_Init(void)
 {
@@ -34,19 +42,12 @@ void Button_Init(void)
 #pragma vector=PORT2_VECTOR
 __interrupt void PORT2_ISR(void)
 {
-  // save P2IFG flags, only enabled bits
-  uint8_t intflags = P2IFG;
-  intflags &= P2IE;
-  
-  // dispatch buttons
-  if (IS_BUTTON_PRESSED(intflags, BUTTON_DOWN)) SetEvent(EVENT_BUTTON_DOWN);
-  if (IS_BUTTON_PRESSED(intflags, BUTTON_NUM)) SetEvent(EVENT_BUTTON_NUM);
-  if (IS_BUTTON_PRESSED(intflags, BUTTON_STAR)) SetEvent(EVENT_BUTTON_STAR);
-  if (IS_BUTTON_PRESSED(intflags, BUTTON_BACKLIGHT)) SetEvent(EVENT_BUTTON_BACKLIGHT);
-  if (IS_BUTTON_PRESSED(intflags, BUTTON_UP)) SetEvent(EVENT_BUTTON_UP);
-  
-  // reset P2IFG (interrupt flags)
-  DisableInterrupts();
-  P2IFG &= ~(intflags);
-  EnableInterrupts();
+  // Priority: lowest value to highest
+  // Port 2.0 = 0x02
+  // Port 2.1 = 0x04
+  // Port 2.2 = 0x06
+  // Port 2.3 = 0x08
+  // Port 2.4 = 0x0A
+  // mapped to 0x00 - 0x04
+  SetEvent( ButtonEvents[(P2IV >> 1) - 1] );
 }

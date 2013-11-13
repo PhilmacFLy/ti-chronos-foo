@@ -15,7 +15,7 @@
 
 uint16_t nextnummicroticks = NUM_MICROTICKS;
 
-const EventMaskType TimerEvents[4] = {
+const EventMaskType TimerEvents[] = {
   EVENT_COM_SLOT_RX_START,     // Timer 0 CCR1
   EVENT_COM_SLOT_TX_START,     // Timer 0 CCR2
   EVENT_COM_SLOT_OPEN_SYNC_RX, // Timer 0 CCR3

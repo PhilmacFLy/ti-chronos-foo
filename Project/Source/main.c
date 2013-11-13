@@ -26,8 +26,8 @@ int main(void)
   
   
   
-  x = Temperature_Get(TEMP_C);
-  x = x;
+  //x = Temperature_Get(TEMP_C);
+  //x = x;
   
   //Timer_Start();
   
