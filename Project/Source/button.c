@@ -7,6 +7,7 @@
 
 #include "includes.h"
 #include "scheduler.h"
+#include "event.h"
 #include "button.h"
 
 // initialize button code

@@ -10,6 +10,7 @@
 #include "includes.h"
 #include "com.h"
 #include "scheduler.h"
+#include "event.h"
 #include "timer.h"
 
 uint16_t nextnummicroticks = NUM_MICROTICKS;

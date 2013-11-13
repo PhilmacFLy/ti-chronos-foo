@@ -2022,6 +2022,9 @@
     <name>$PROJ_DIR$\Source\button.c</name>
   </file>
   <file>
+    <name>$PROJ_DIR$\Source\event.c</name>
+  </file>
+  <file>
     <name>$PROJ_DIR$\Source\main.c</name>
   </file>
   <file>
