@@ -73,9 +73,18 @@ void Display_ShowTemperature(uint16_t value, uint8_t index)
 {
   LCDM1 |= 0x40; // show dot
   
-  DSP_SHOW_TOPLINE_NUM(1, (value / 100)); // 10^2 digit
-  DSP_SHOW_TOPLINE_NUM(2, ((value / 10) % 10)); // 10^1 digit
-  DSP_SHOW_TOPLINE_NUM(3, (value % 10)); // 10^0 digit
+  if (value > 999)
+  {
+    DSP_SHOW_TOPLINE_NUM(1, (value / 100)); // 10^2 digit
+    DSP_SHOW_TOPLINE_NUM(2, ((value / 10) % 10)); // 10^1 digit
+    DSP_SHOW_TOPLINE_NUM(3, (value % 10)); // 10^0 digit
+  }
+  else
+  {
+    DSP_SHOW_TOPLINE_CHAR(1, MINUS);
+    DSP_SHOW_TOPLINE_CHAR(2, MINUS);
+    DSP_SHOW_TOPLINE_CHAR(3, MINUS);
+  }
   DSP_SHOW_TOPLINE_CHAR(4, C);
   
   DSP_SHOW_BOTTOMLINE_CHAR(1, I);

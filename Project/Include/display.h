@@ -44,6 +44,7 @@
 # define DSP_CHAR_T         (LEFT_BOTTOM | LEFT_TOP | TOP)
 
 # define DSP_CHAR_SPACE     ((uint8_t) 0)
+# define DSP_CHAR_MINUS     (MIDDLE)
 
 # define DSP_NUM(x)         (LCD_Map[x])
 
