@@ -34,6 +34,7 @@ typedef uint16_t EventMaskType;
 //# define WaitEvent(eventmask) while((EventMaskType)0 == GetEvent(eventmask))
 
 EventMaskType GetEvent(EventMaskType eventmask);
+EventMaskType GetAllEvents();
 void ClearEvent(EventMaskType eventmask);
 void SetEvent(EventMaskType eventmask);
 

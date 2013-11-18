@@ -83,11 +83,11 @@ int main(void)
   {
     // go to sleep
     EnterSleep();
-    // get all events which can do an wakeup and instantly clear all these events
-    EventMaskType ev = GetEvent(EVENT_DISPLAY_TICK);
-    ClearEvent(ev);
+    // get all events which can do an wakeup
+    EventMaskType ev = GetAllEvents();
     if (EVENT_DISPLAY_TICK == (ev & EVENT_DISPLAY_TICK))
     {
+      ClearEvent(EVENT_DISPLAY_TICK);
       Display_Handler(ev);
     }
   }

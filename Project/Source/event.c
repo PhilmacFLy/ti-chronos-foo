@@ -19,6 +19,15 @@ EventMaskType GetEvent(EventMaskType eventmask)
   return tmpevents;
 }
 
+// gets all events
+EventMaskType GetAllEvents()
+{
+  DisableInterrupts();
+  EventMaskType tmpevents = eventmemory;
+  EnableInterrupts();
+  return tmpevents;
+}
+
 // clears all events which are set in "eventmask"
 void ClearEvent(EventMaskType eventmask)
 {

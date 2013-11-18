@@ -8,6 +8,8 @@
 #ifndef __DISPLAY_H__
 # define __DISPLAY_H__
 
+#include "event.h"
+
 // code for display
 # define BOTTOM         (BIT7)
 # define MIDDLE         (BIT1)

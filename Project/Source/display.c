@@ -176,7 +176,7 @@ void Display_Button_Star_Pressed()
   }
 }
 
-void Display_ButtonNUM_Pressed()
+void Display_Button_Num_Pressed()
 {
   if (displaystate == DSP_STATE_NODE_LIST)
   {
@@ -184,31 +184,36 @@ void Display_ButtonNUM_Pressed()
   }
 }
 
-void Display_Handler()
+void Display_Handler(EventMaskType ev)
 {
   // dispatch events
   if (EVENT_BUTTON_UP == (ev & EVENT_BUTTON_UP))
   {
+    ClearEvent(EVENT_BUTTON_UP);
     Display_Button_Up_Pressed();
   }
 
   if (EVENT_BUTTON_DOWN == (ev & EVENT_BUTTON_DOWN))
   {
+    ClearEvent(EVENT_BUTTON_DOWN);
     Display_Button_Down_Pressed();
   }
 
   if (EVENT_BUTTON_NUM == (ev & EVENT_BUTTON_NUM))
   {
+    ClearEvent(EVENT_BUTTON_NUM);
     Display_Button_Num_Pressed();
   }
 
   if (EVENT_BUTTON_STAR == (ev & EVENT_BUTTON_STAR))
   {
+    ClearEvent(EVENT_BUTTON_STAR);
     Display_Button_Star_Pressed();
   }
 
   if (EVENT_BUTTON_BACKLIGHT == (ev & EVENT_BUTTON_BACKLIGHT))
   {
+    ClearEvent(EVENT_BUTTON_BACKLIGHT);
     Display_Activate();
   }
 
