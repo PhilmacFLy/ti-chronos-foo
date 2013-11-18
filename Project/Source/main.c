@@ -88,33 +88,7 @@ int main(void)
     ClearEvent(ev);
     if (EVENT_DISPLAY_TICK == (ev & EVENT_DISPLAY_TICK))
     {
-      // get all button events and instantly clear all these
-      EventMaskType evdsp = GetEvent(EVENT_BUTTON_DOWN | EVENT_BUTTON_NUM | EVENT_BUTTON_STAR | EVENT_BUTTON_BACKLIGHT | EVENT_BUTTON_UP);
-      ClearEvent(evdsp);
-      
-      // dispatch events
-      if (EVENT_BUTTON_UP == (evdsp & EVENT_BUTTON_UP))
-      {
-      }
-      
-      if (EVENT_BUTTON_DOWN == (evdsp & EVENT_BUTTON_DOWN))
-      {
-      }
-      
-      if (EVENT_BUTTON_NUM == (evdsp & EVENT_BUTTON_NUM))
-      {
-      }
-      
-      if (EVENT_BUTTON_STAR == (evdsp & EVENT_BUTTON_STAR))
-      {
-      }
-      
-      if (EVENT_BUTTON_BACKLIGHT == (evdsp & EVENT_BUTTON_BACKLIGHT))
-      {
-        Display_Activate();
-      }
-      
-      Display_MainFunction();
+
     }
   }
 }
