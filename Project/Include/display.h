@@ -64,6 +64,12 @@
                             displaycounter = 40
 # define DSP_DEACTIVATE()   LCDBCTL0 &= (~LCDON)
 
+//Display States
+# define DSP_STATE_SYNC (0)
+# define DSP_STATE_RESYNC (1)
+# define DSP_STATE_SINGLE_TEMP (2)
+# define DSP_STATE_NODE_LIST (3)
+
 void Display_ShowStringSync();
 void Display_ShowSetID(uint8_t index);
 void Display_ShowTemperature(uint16_t value, uint8_t index);
@@ -71,5 +77,12 @@ void Display_ShowTemperature(uint16_t value, uint8_t index);
 void Display_Init();
 void Display_Activate();
 void Display_MainFunction();
+void Display_Handler(EventMaskType ev);
+
+//Single Button functions
+void Display_Button_Up_Pressed();
+void Display_Button_Down_Pressed();
+void Display_Button_Num_Pressed();
+void Display_Button_Star_Pressed();
 
 #endif /* __DISPLAY_H__ */

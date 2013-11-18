@@ -88,7 +88,7 @@ int main(void)
     ClearEvent(ev);
     if (EVENT_DISPLAY_TICK == (ev & EVENT_DISPLAY_TICK))
     {
-
+      Display_Handler(ev);
     }
   }
 }

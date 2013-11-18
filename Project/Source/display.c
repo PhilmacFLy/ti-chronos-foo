@@ -13,6 +13,7 @@
 // probably change so the mainfunction handles only a mode
 
 static volatile uint8_t displaycounter = 40; // 5 seconds
+volatile uint8_t displaystate;
   
 const uint8_t LCD_Map[] = {
   BOTTOM | TOP | LEFT_BOTTOM | LEFT_TOP | RIGHT_BOTTOM | RIGHT_TOP,         // 0
@@ -143,3 +144,73 @@ void Display_MainFunction()
     }
   }
 }
+
+void Display_Button_Up_Pressed()
+{
+  if (displaystate == DSP_STATE_NODE_LIST)
+  {
+    //TODO: select node bellow current Node
+  }
+}
+
+void Display_Button_Down_Pressed()
+{
+  if (displaystate == DSP_STATE_NODE_LIST)
+  {
+    //TODO: select node above current Node
+  }
+}
+
+void Display_Button_Star_Pressed()
+{
+  switch (displaystate) 
+  {
+    case DSP_STATE_SINGLE_TEMP:
+      //TODO: Show Node List
+      displaystate = DSP_STATE_NODE_LIST;
+      break;
+    case DSP_STATE_NODE_LIST:
+      //TODO: Show new node;
+      displaystate = DSP_STATE_SINGLE_TEMP;
+      break;
+  }
+}
+
+void Display_ButtonNUM_Pressed()
+{
+  if (displaystate == DSP_STATE_NODE_LIST)
+  {
+    //TODO: select odl node
+  }
+}
+
+void Display_Handler()
+{
+  // dispatch events
+  if (EVENT_BUTTON_UP == (ev & EVENT_BUTTON_UP))
+  {
+    Display_Button_Up_Pressed();
+  }
+
+  if (EVENT_BUTTON_DOWN == (ev & EVENT_BUTTON_DOWN))
+  {
+    Display_Button_Down_Pressed();
+  }
+
+  if (EVENT_BUTTON_NUM == (ev & EVENT_BUTTON_NUM))
+  {
+    Display_Button_Num_Pressed();
+  }
+
+  if (EVENT_BUTTON_STAR == (ev & EVENT_BUTTON_STAR))
+  {
+    Display_Button_Star_Pressed();
+  }
+
+  if (EVENT_BUTTON_BACKLIGHT == (ev & EVENT_BUTTON_BACKLIGHT))
+  {
+    Display_Activate();
+  }
+
+  Display_MainFunction();
+}  
