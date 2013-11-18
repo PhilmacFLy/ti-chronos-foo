@@ -40,13 +40,14 @@ sint16_t Temperature_Get(uint8_t TEMP_ART)
     ADC12CTL0 |= ADC12SC;                   // Sampling and conversion start
     
     // LPM3 with interrupts enabled
-    EnableInterrupts();
+    EnableInterrupts(); // not necessary
     EnterSleep();
     
     // other calculation?
+    // seems halfway accurate, but not really adjusted
     // ((A10/4096*1500mV) - 680mV)*(1/2.25mV) = (A10/4096*667) - 302
     // = (A10 - 1855) * (667 / 4096)
-    temp2 = (((sint32_t) ((sint32_t) temp - 1855)) * 667) / 4096;
+    temp2 = (((sint32_t) ((sint32_t) temp - 1855)) * 667 * 10) / 4096;
     temp2 = temp2 + 1;
     
     if (TEMP_ART == TEMP_C) 
@@ -72,7 +73,8 @@ __interrupt void ADC12ISR (void)
 {
   // better code
   
-  if (6 == ADC12IV) // ADC12IFG0
+  volatile uint8_t value = ADC12IV;
+  if (6 == value) // ADC12IFG0
   {
     temp = ADC12MEM0;
     LeaveSleep();

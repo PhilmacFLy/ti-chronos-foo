@@ -16,8 +16,8 @@
 
 // scheduling defines
 # define MICROTICK_RX_START       0x1FD6u // a bit more than 1,2 ms before TX START
-# define MICROTICK_TX_START       0x2000
-# define MICROTICK_OPEN_SYNC_RX   0x6000u
+# define MICROTICK_TX_START       0x2000u
+# define MICROTICK_RX_TX_SYNC     0x6000u
 
 # define MICROTICK_DSP_START      0x0A00u
 # define MICROTICK_DSP_CYCLETIME  0x1000u

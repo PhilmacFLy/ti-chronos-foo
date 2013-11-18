@@ -18,7 +18,7 @@ uint16_t nextnummicroticks = NUM_MICROTICKS;
 const EventMaskType TimerEvents[] = {
   EVENT_COM_SLOT_RX_START,     // Timer 0 CCR1
   EVENT_COM_SLOT_TX_START,     // Timer 0 CCR2
-  EVENT_COM_SLOT_OPEN_SYNC_RX, // Timer 0 CCR3
+  EVENT_COM_SLOT_RX_TX_SYNC,   // Timer 0 CCR3
   EVENT_DISPLAY_TICK,          // Timer 0 CCR4
 };
 
@@ -39,7 +39,7 @@ void Timer_Init()
   TA0CCTL4 |= CCIE;
   
   // ACLK as clock source, with input divider /1
-  TA0CTL = TASSEL__ACLK | ID__1;
+  TA0CTL = TASSEL__ACLK | ID__1 | TACLR;
   
   // load CCR0 with number of microticks
   // and other CCR with corresponding values
@@ -47,7 +47,7 @@ void Timer_Init()
   TA0CCR0 = NUM_MICROTICKS;
   TA0CCR1 = MICROTICK_RX_START;
   TA0CCR2 = MICROTICK_TX_START;
-  TA0CCR3 = MICROTICK_OPEN_SYNC_RX;
+  TA0CCR3 = MICROTICK_RX_TX_SYNC;
   
   // load CCR4 with value for display handling
   TA0CCR4 = MICROTICK_DSP_START;
@@ -102,6 +102,11 @@ void Timer_SetMode(uint8_t mode)
   {
     TA0CCTL2 |= CCIE; // enable TX interrupt
     TA0CCTL3 |= CCIE; // enable RX interrupt for sync slots
+  }
+  
+  if (COM_MODE_MYSYNCSLOT == mode)
+  {
+    TA0CCTL3 |= CCIE; // enable TX interrupt for sync slots
   }
 }
 
@@ -170,6 +175,7 @@ __interrupt void TIMER0_A0_ISR(void)
 __interrupt void TIMER0_A1_5_ISR(void)
 {
   // Priority: lowest value to highest
+  // Timer 0 CCR0 is handled within it's own ISR
   // Timer 0 CCR1 = 0x02
   // Timer 0 CCR2 = 0x04
   // Timer 0 CCR3 = 0x06
@@ -178,10 +184,11 @@ __interrupt void TIMER0_A1_5_ISR(void)
   // Timer 0 CCR6 = 0x0C
   // Timer 0 Overflow = 0x0E
   // mapped to 0x00 - 0x06
-  SetEvent( TimerEvents[(TA0IV >> 1) - 1] );
-  if (0x08 == TA0IV)
+  volatile uint8_t value = TA0IV;
+  SetEvent( TimerEvents[(value >> 1) - 1] );
+  if (0x08 == value)
   {
-    // reload CCR4
+    // reload CCR4 for display
     TA0CCR4 += MICROTICK_DSP_CYCLETIME;
   }
   LeaveSleep();

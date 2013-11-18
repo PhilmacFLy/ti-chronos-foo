@@ -1,7 +1,8 @@
 
 /*
   Filename: main.c
-  Description: This file contains the main.c (application)
+  Description: This file contains the main.c (application). This function is
+               basically the scheduler and implements the node state machine
 */
 
 #include "includes.h"
@@ -9,45 +10,111 @@
 #include "scheduler.h"
 #include "button.h"
 #include "temperature.h"
+#include "display.h"
+#include "event.h"
+#include "com.h"
 #include "main.h"
+
+uint8_t MyID = 0xFF;
+uint16_t temperatures[64] = {TEMP_INVALID_VALUE};
+uint8_t comstate[64] = {COM_MODE_IGNORE};
 
 int main(void)
 {
-  uint16_t x;
   // Stop watchdog timer to prevent time out reset
-  WDTCTL = WDTPW | WDTHOLD;
+  WDTCTL = WDTPW | WDTHOLD; // disable WDG
   
-  // mostly not done this code here
-  // uC Initialisation
+  // initialize all modules
   Timer_Init();
   Button_Init();
   Temperature_Init();
-  Scheduler_Init();
+  Display_Init();
+  Scheduler_Init();   // enables interrupts, so should be last one
+  
+
+
+
+
+  uint8_t actLevel = PMMCTL0_L & PMMCOREV_3;
+  actLevel = actLevel;
+  // flash reading for idiots
+  uint8_t* flash_mem_C = (uint8_t*) 0x1800;
+  // but is dis workin?
+  //*(flash_mem) = 0x00; // OIOIOI
+  
+  // mostly not done this code here
+  // uC Initialisation
   
   
+  //x = ((uint16_t)(flash_mem[2]) << 8) + (uint16_t)(flash_mem[3]);
   
+  
+//*******************************************************************************
+// Configure LCD_B
+  
+  //Display_ShowTemperature(-200);
+  //Display_ShowTemperature(400, 24);
+  //Display_ShowTemperature(0);
+  sint16_t x =Temperature_Get(TEMP_C);
+  x++;
+  Display_ShowTemperature(123, 45);
+  Timer_Start(0);
+  
+  //LCDM2 = LCD_Map[8];
   //x = Temperature_Get(TEMP_C);
   //x = x;
   
   //Timer_Start();
   
-  // enable interrupts
-  //__bis_SR_register(GIE);
-  EnableInterrupts();
-  
   // here is only testing code!
   
-  Timer_Delay(50);
-  Timer_Start(0);
+  //Timer_Delay(50);
+  //Timer_Start(0);
   //tmp
   //TA0CCTL1 |= CCIE;
   //TA0CCTL2 |= CCIE;
   //TA0CCTL3 |= CCIE;
   //testcall?
-  Timer_CorrectSync(20);
+  //Timer_CorrectSync(20);
   // never return!
+  
+  
   while(1)
   {
+    // go to sleep
     EnterSleep();
+    // get all events which can do an wakeup and instantly clear all these events
+    EventMaskType ev = GetEvent(EVENT_DISPLAY_TICK);
+    ClearEvent(ev);
+    if (EVENT_DISPLAY_TICK == (ev & EVENT_DISPLAY_TICK))
+    {
+      // get all button events and instantly clear all these
+      EventMaskType evdsp = GetEvent(EVENT_BUTTON_DOWN | EVENT_BUTTON_NUM | EVENT_BUTTON_STAR | EVENT_BUTTON_BACKLIGHT | EVENT_BUTTON_UP);
+      ClearEvent(evdsp);
+      
+      // dispatch events
+      if (EVENT_BUTTON_UP == (evdsp & EVENT_BUTTON_UP))
+      {
+      }
+      
+      if (EVENT_BUTTON_DOWN == (evdsp & EVENT_BUTTON_DOWN))
+      {
+      }
+      
+      if (EVENT_BUTTON_NUM == (evdsp & EVENT_BUTTON_NUM))
+      {
+      }
+      
+      if (EVENT_BUTTON_STAR == (evdsp & EVENT_BUTTON_STAR))
+      {
+      }
+      
+      if (EVENT_BUTTON_BACKLIGHT == (evdsp & EVENT_BUTTON_BACKLIGHT))
+      {
+        Display_Activate();
+      }
+      
+      Display_MainFunction();
+    }
   }
 }

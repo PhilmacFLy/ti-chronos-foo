@@ -11,6 +11,8 @@
 # define TEMP_C 0x0
 # define TEMP_F 0x1
 
+# define TEMP_INVALID_VALUE (0xFFFF)
+
 void Temperature_Init();
 sint16_t Temperature_Get(uint8_t TEMP_ART);
 

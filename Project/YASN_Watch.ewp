@@ -326,6 +326,7 @@
         <option>
           <name>newCCIncludePaths</name>
           <state>$PROJ_DIR$\Include</state>
+          <state>$PROJ_DIR$\TIDrivers</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1334,6 +1335,7 @@
         <option>
           <name>newCCIncludePaths</name>
           <state>$PROJ_DIR$\Include</state>
+          <state>$PROJ_DIR$\TIDrivers</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -2020,6 +2022,9 @@
   </configuration>
   <file>
     <name>$PROJ_DIR$\Source\button.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\Source\display.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$\Source\event.c</name>

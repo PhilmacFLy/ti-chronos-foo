@@ -7,10 +7,6 @@
 #ifndef __EVENT_H__
 # define __EVENT_H__
 
-// configuration defines
-// if used, within the event APIs, the interrupts are locked
-# define INTERRUPT_LOCK_EVENT_API
-
 typedef uint16_t EventMaskType;
 
 # define EVENT_NO_EVENT                 ((EventMaskType) 0x0000)
@@ -18,7 +14,7 @@ typedef uint16_t EventMaskType;
 # define EVENT_COM_SLOT_START           ((EventMaskType) 0x0001)
 # define EVENT_COM_SLOT_RX_START        ((EventMaskType) 0x0002)
 # define EVENT_COM_SLOT_TX_START        ((EventMaskType) 0x0004)
-# define EVENT_COM_SLOT_OPEN_SYNC_RX    ((EventMaskType) 0x0008)
+# define EVENT_COM_SLOT_RX_TX_SYNC      ((EventMaskType) 0x0008)
 # define EVENT_UNUSED0x0010             ((EventMaskType) 0x0010)
 # define EVENT_UNUSED0x0020             ((EventMaskType) 0x0020)
 # define EVENT_UNUSED0x0040             ((EventMaskType) 0x0040)

@@ -49,5 +49,6 @@ __interrupt void PORT2_ISR(void)
   // Port 2.3 = 0x08
   // Port 2.4 = 0x0A
   // mapped to 0x00 - 0x04
-  SetEvent( ButtonEvents[(P2IV >> 1) - 1] );
+  volatile uint8_t value = P2IV;
+  SetEvent( ButtonEvents[(value >> 1) - 1] );
 }

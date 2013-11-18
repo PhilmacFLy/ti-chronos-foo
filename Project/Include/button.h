@@ -14,8 +14,6 @@
 #define BUTTON_UP           (BIT4)
 #define ALL_BUTTONS         (BUTTON_STAR + BUTTON_NUM + BUTTON_UP + BUTTON_DOWN + BUTTON_BACKLIGHT)
 
-#define IS_BUTTON_PRESSED(flags, button) ((flags & button) == button)
-
 void Button_Init(void);
 
 #endif /* __BUTTON_H__ */
