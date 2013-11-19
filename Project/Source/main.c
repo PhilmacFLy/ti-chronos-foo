@@ -13,11 +13,10 @@
 #include "display.h"
 #include "event.h"
 #include "com.h"
+#include "flash.h"
 #include "main.h"
 
 uint8_t MyID = 0xFF;
-uint16_t temperatures[64] = {TEMP_INVALID_VALUE};
-uint8_t comstate[64] = {COM_MODE_IGNORE};
 
 int main(void)
 {
@@ -29,12 +28,19 @@ int main(void)
   Button_Init();
   Temperature_Init();
   Display_Init();
+  Flash_Init();
   Scheduler_Init();   // enables interrupts, so should be last one
   
+  // read calibration data from flash (test, working)
+  //Flash_Read(&MyID, 1);
+  //MyID++;
+  //Flash_Write(&MyID, 1);
 
 
-
-
+  
+  /*
+   start of test code
+  */
   uint8_t actLevel = PMMCTL0_L & PMMCOREV_3;
   actLevel = actLevel;
   // flash reading for idiots
@@ -78,6 +84,10 @@ int main(void)
   //Timer_CorrectSync(20);
   // never return!
   
+  
+  /*
+   end of test code
+  */
   
   while(1)
   {

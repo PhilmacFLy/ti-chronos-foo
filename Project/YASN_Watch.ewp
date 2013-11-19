@@ -2030,6 +2030,9 @@
     <name>$PROJ_DIR$\Source\event.c</name>
   </file>
   <file>
+    <name>$PROJ_DIR$\Source\flash.c</name>
+  </file>
+  <file>
     <name>$PROJ_DIR$\Source\main.c</name>
   </file>
   <file>
