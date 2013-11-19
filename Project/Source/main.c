@@ -14,6 +14,7 @@
 #include "event.h"
 #include "com.h"
 #include "flash.h"
+#include "data.h"
 #include "main.h"
 
 uint8_t MyID = 0xFF;
@@ -29,6 +30,7 @@ int main(void)
   Temperature_Init();
   Display_Init();
   Flash_Init();
+  Data_Init();
   Scheduler_Init();   // enables interrupts, so should be last one
   
   // read calibration data from flash (test, working)
@@ -93,7 +95,7 @@ int main(void)
   {
     // go to sleep
     EnterSleep();
-    // get all events which can do an wakeup
+    // get all events
     EventMaskType ev = GetAllEvents();
     if (EVENT_DISPLAY_TICK == (ev & EVENT_DISPLAY_TICK))
     {

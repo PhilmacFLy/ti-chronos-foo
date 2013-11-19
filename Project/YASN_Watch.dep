@@ -2,7 +2,7 @@
 
 <project>
   <fileVersion>2</fileVersion>
-  <fileChecksum>1787693320</fileChecksum>
+  <fileChecksum>678390548</fileChecksum>
   <configuration>
     <name>Debug</name>
     <outputs>
@@ -50,6 +50,10 @@
       <file>$PROJ_DIR$\Debug\Obj\flash.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\flash.r43</file>
       <file>$PROJ_DIR$\Include\flash.h</file>
+      <file>$PROJ_DIR$\Source\data.c</file>
+      <file>$PROJ_DIR$\Include\data.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\data.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\data.r43</file>
     </outputs>
     <file>
       <name>[ROOT_NODE]</name>
@@ -173,6 +177,10 @@
           <name>ICC430</name>
           <file> 35 9 24 19 26 25 11 32 37 34 22 21 43 33</file>
         </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 35 9 24 19 26 25 11 32 37 34 22 21 43 45 33</file>
+        </tool>
       </inputs>
     </file>
     <file>
@@ -249,7 +257,30 @@
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 15 36 16 39 27 42 18 23 13 14 28</file>
+          <file> 15 36 16 47 39 27 42 18 23 13 14 28</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Source\data.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 47</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 46</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 35 9 24 19 26 45</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 35 9 24 19 26 45</file>
         </tool>
       </inputs>
     </file>

@@ -2024,6 +2024,9 @@
     <name>$PROJ_DIR$\Source\button.c</name>
   </file>
   <file>
+    <name>$PROJ_DIR$\Source\data.c</name>
+  </file>
+  <file>
     <name>$PROJ_DIR$\Source\display.c</name>
   </file>
   <file>

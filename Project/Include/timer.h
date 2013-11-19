@@ -25,6 +25,8 @@
 /*
 precalculated scheduling
 
+jeweils 1s
+
 assumptions:
 - no job needs more than ~62500 cycles (at 1 MHz)
 - if not, higher cpu frequency necessary
@@ -34,6 +36,21 @@ assumptions:
     |     |     |     |     |     |     |     |   Display Update (a bit later than 0x400)
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 0    1000  2000  3000  4000  5000  6000  7000  8000
+
+assumptions:
+- no job needs more than ~62500 cycles (at 1 MHz)
+- if not, higher cpu frequency necessary
+
+
+      |           |           |           |       Open RX Sync Slot
+|           |           |           |             Communication
+    |     |     |     |     |     |     |     |   Display Update (a bit later than 0x400)
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+0    1000  2000  3000  4000  5000  6000  7000  8000
+
+
+alternative:
+
 */
 
 void Timer_Init();
