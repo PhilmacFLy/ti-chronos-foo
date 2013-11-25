@@ -35,4 +35,6 @@
 
 void Com_Handler(EventMaskType ev);
 
+uint8_t Com_Networkexists();
+
 #endif /* __COM_H__ */

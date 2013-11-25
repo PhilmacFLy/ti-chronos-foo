@@ -18,25 +18,55 @@
 #include "main.h"
 
 uint8_t MyID = 0xFF;
+uint8_t mainstate = MAIN_STATE_UNINIT;
+uint8_t master = 0;
 
 int main(void)
 {
+  switch(mainstate)
+  {
   // Stop watchdog timer to prevent time out reset
-  WDTCTL = WDTPW | WDTHOLD; // disable WDG
-  
-  // initialize all modules
-  Timer_Init();
-  Button_Init();
-  Temperature_Init();
-  Display_Init();
-  Flash_Init();
-  Data_Init();
-  Scheduler_Init();   // enables interrupts, so should be last one
-  
-  // read calibration data from flash (test, working)
-  //Flash_Read(&MyID, 1);
-  //MyID++;
-  //Flash_Write(&MyID, 1);
+    case MAIN_STATE_UNINIT: 
+      WDTCTL = WDTPW | WDTHOLD; // disable WDG
+    
+      // initialize all modules
+      Timer_Init();
+      Button_Init();
+      Temperature_Init();
+      Display_Init();
+      Flash_Init();
+      Data_Init();
+      Scheduler_Init();   // enables interrupts, so should be last one
+      mainstate = MAIN_STATE_INIT;
+      break;
+    case MAIN_STATE_INIT:
+      //warte 16 sekunden plus Random(17);
+      if Com_Networkexists = 1 then
+      {
+	master = 0;
+	mainstate = MAIN_STATE_INIT_CHILD;
+      }
+      else
+      {
+	master = 1;
+	mainstate = MAIN_STATE_INIT_MASTER;
+      }
+      break;
+    case MAIN_STATE_INIT_MASTER:
+      //TODO Implement
+      mainstate = MAIN_STATE_COM_MASTER;
+      break;
+    case MAIN_STATE_INIT_CHILD:
+      //TODO Implement
+      mainstate = MAIN_STATE_COM_CHILD;
+      break;
+    case MAIN_STATE_COM_MASTER:
+      //TODO Implement
+      break;
+    case MAIN_STATE_COM_CHILD;
+      //TODO Implement
+      break;
+  }
 
 
   
