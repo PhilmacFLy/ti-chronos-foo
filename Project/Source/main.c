@@ -26,7 +26,6 @@ int main(void)
   switch(mainstate)
   {
   // Stop watchdog timer to prevent time out reset
-<<<<<<< HEAD
     case MAIN_STATE_UNINIT: 
       WDTCTL = WDTPW | WDTHOLD; // disable WDG
     
@@ -68,26 +67,6 @@ int main(void)
       //TODO Implement
       break;
   }
-=======
-  WDTCTL = WDTPW | WDTHOLD; // disable WDG
-  
-  // initialize all modules
-  Timer_Init();
-  Button_Init();
-  Temperature_Init();
-  Display_Init();
-  Flash_Init();
-  Data_Init();
-  Com_Init();
-  Scheduler_Init();   // enables interrupts, so should be last one
-  
-  // Timer_Start(0);
-  
-  // read calibration data from flash (test, working)
-  //Flash_Read(&MyID, 1);
-  //MyID++;
-  //Flash_Write(&MyID, 1);
->>>>>>> 715394559800a5d03364169aa8e49d75b5eed856
 
   while(1)
   {
