@@ -12,3 +12,8 @@ void Com_Handler(EventMaskType ev)
 {
   // todo: implement
 }
+
+void Com_Init()
+{
+  
+}

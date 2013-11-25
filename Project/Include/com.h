@@ -34,5 +34,6 @@
 # define NEWDATABIT_MASK      (0x80u)
 
 void Com_Handler(EventMaskType ev);
+void Com_Init();
 
 #endif /* __COM_H__ */

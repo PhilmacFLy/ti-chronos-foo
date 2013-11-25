@@ -68,9 +68,8 @@
 
 //Display States
 # define DSP_STATE_SYNC (0)
-# define DSP_STATE_RESYNC (1)
+# define DSP_STATE_SETID (1)
 # define DSP_STATE_SINGLE_TEMP (2)
-# define DSP_STATE_NODE_LIST (3)
 
 void Display_ShowStringSync();
 void Display_ShowSetID(uint8_t index);
