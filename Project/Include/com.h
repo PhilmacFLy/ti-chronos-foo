@@ -7,6 +7,8 @@
 #ifndef __COM_H__
 # define __COM_H__
 
+#include "event.h"
+
 /*
   8 Bit:
   0x01 : Timeout Bit 1
@@ -30,5 +32,7 @@
 # define TIMEOUT_MASK         (0x0Fu)
 
 # define NEWDATABIT_MASK      (0x80u)
+
+void Com_Handler(EventMaskType ev);
 
 #endif /* __COM_H__ */

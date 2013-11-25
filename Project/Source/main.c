@@ -2,7 +2,7 @@
 /*
   Filename: main.c
   Description: This file contains the main.c (application). This function is
-               basically the scheduler and implements the node state machine
+               basically the scheduler.
 */
 
 #include "includes.h"
@@ -95,12 +95,20 @@ int main(void)
   {
     // go to sleep
     EnterSleep();
-    // get all events
+    // get all events and dispatch
     EventMaskType ev = GetAllEvents();
     if (EVENT_DISPLAY_TICK == (ev & EVENT_DISPLAY_TICK))
     {
       ClearEvent(EVENT_DISPLAY_TICK);
       Display_Handler(ev);
+    }
+    if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START) ||
+        EVENT_COM_SLOT_RX_START == (ev & EVENT_COM_SLOT_RX_START) ||
+        EVENT_COM_SLOT_TX_START == (ev & EVENT_COM_SLOT_TX_START) ||
+        EVENT_COM_SLOT_RX_TX_SYNC == (ev & EVENT_COM_SLOT_RX_TX_SYNC))
+    {
+      // no clear in here, dispatching in Com_Handler
+      Com_Handler(ev);
     }
   }
 }

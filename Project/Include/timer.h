@@ -33,7 +33,7 @@ assumptions:
 
                                     |             Open RX Sync Slot
             |                                     Communication
-    |     |     |     |     |     |     |     |   Display Update (a bit later than 0x400)
+    |     |     |     |     |     |     |     |   Display Update
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 0    1000  2000  3000  4000  5000  6000  7000  8000
 
@@ -42,14 +42,15 @@ assumptions:
 - if not, higher cpu frequency necessary
 
 
+alternative:
+
       |           |           |           |       Open RX Sync Slot
 |           |           |           |             Communication
-    |     |     |     |     |     |     |     |   Display Update (a bit later than 0x400)
+    |     |     |     |     |     |     |     |   Display Update
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 0    1000  2000  3000  4000  5000  6000  7000  8000
 
 
-alternative:
 
 */
 
