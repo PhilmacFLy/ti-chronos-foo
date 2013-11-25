@@ -34,6 +34,8 @@ int main(void)
   Com_Init();
   Scheduler_Init();   // enables interrupts, so should be last one
   
+  // Timer_Start(0);
+  
   // read calibration data from flash (test, working)
   //Flash_Read(&MyID, 1);
   //MyID++;

@@ -72,7 +72,7 @@ LogFile=_ ""
 [Breakpoints]
 Bp0=_ "STD_CODE" "{$PROJ_DIR$\Source\button.c}.52.20" 1 0 0 0 "" 0 ""
 Bp1=_ "STD_CODE" "{$PROJ_DIR$\Source\temperature.c}.76.20" 0 0 0 0 "" 0 ""
-Bp2=_ "STD_CODE" "{$PROJ_DIR$\Source\main.c}.38.5" 1 0 0 0 "" 0 ""
+Bp2=_ "STD_CODE" "{$PROJ_DIR$\Source\main.c}.40.5" 1 0 0 0 "" 0 ""
 Count=3
 [FET]
 Clock mode=14

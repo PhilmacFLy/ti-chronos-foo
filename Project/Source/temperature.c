@@ -34,7 +34,7 @@ void Temperature_Init()
 }
 
 // Start Conversion
-sint16_t Temperature_Get(uint8_t TEMP_ART)
+uint16_t Temperature_Get(uint8_t TEMP_ART)
 {
     sint16_t temp2;
     ADC12CTL0 |= ADC12SC;                   // Sampling and conversion start
