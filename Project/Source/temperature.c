@@ -43,13 +43,20 @@ uint16_t Temperature_Get(uint8_t TEMP_ART)
     EnableInterrupts(); // not necessary
     EnterSleep();
     
-    // other calculation?
-    // seems halfway accurate, but not really adjusted
-    // ((A10/4096*1500mV) - 680mV)*(1/2.25mV) = (A10/4096*667) - 302
+    // messwert1: 680 mV = 0 grad
+    // messwert2: 850 mV = 70 grad
+    // y = grad celsius
+    // x = voltage                                      (A10/4096*1500mV) - 680mV
+    // y = mx+t
+    // m = (y1-y2)/(x1-x2)
+    // m = (70 - 0) / (855 - 680) = 70/175 =                    1/2.25 mV
+    // t = 0
+    // => temperature = ((A10 / 4096 * 1500mV) - 680mV) * (1/2.25mV)
     // = (A10 - 1855) * (667 / 4096)
-    temp2 = (((sint32_t) ((sint32_t) temp - 1855)) * 667 * 10) / 4096;
+    temp2 = (((uint32_t) ((uint32_t) temp - 1855)) * 667 * 10) / 4096;
     temp2 = temp2 + 1;
     
+    /*
     if (TEMP_ART == TEMP_C) 
     {
     // Temperature in Celsius
@@ -65,6 +72,8 @@ uint16_t Temperature_Get(uint8_t TEMP_ART)
     temp = ((temp - 2264) * 738) / 4096;
     }
     __no_operation();                       // SET BREAKPOINT HERE
+    */
+    
     return (uint16_t) temp;
 }
 
