@@ -14,7 +14,7 @@
 # define TEMP_INVALID_VALUE (0xFFFF)
 
 void Temperature_Init();
-sint16_t Temperature_Get(uint8_t TEMP_ART);
+uint16_t Temperature_Get(uint8_t TEMP_ART);
 
 #endif /* __TEMPERATURE_H__ */
  

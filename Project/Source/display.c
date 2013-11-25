@@ -8,12 +8,15 @@
 #include "includes.h"
 #include "scheduler.h"
 #include "event.h"
+#include "data.h"
+#include "main.h"
 #include "display.h"
 
 // probably change so the mainfunction handles only a mode
 
 static volatile uint8_t displaycounter = 40; // 5 seconds
-volatile uint8_t displaystate;
+static volatile uint8_t displaystate = DSP_STATE_SYNC; // start value
+uint8_t currentshownvalue = 0;
   
 const uint8_t LCD_Map[] = {
   BOTTOM | TOP | LEFT_BOTTOM | LEFT_TOP | RIGHT_BOTTOM | RIGHT_TOP,         // 0
@@ -28,7 +31,6 @@ const uint8_t LCD_Map[] = {
   TOP | MIDDLE | BOTTOM | RIGHT_TOP | RIGHT_BOTTOM | LEFT_TOP               // 9
 };
 
-// example functions?
 void Display_ShowStringSync()
 {
   LCDM1 &= (~0x40); // hide dot
@@ -46,7 +48,7 @@ void Display_ShowStringSync()
   DSP_SHOW_BOTTOMLINE_CHAR(4, SPACE);
   DSP_SHOW_BOTTOMLINE_CHAR(5, SPACE);
   
-  DSP_ACTIVATE();
+  displaystate = DSP_STATE_SYNC;
 }
 
 void Display_ShowSetID(uint8_t index)
@@ -66,7 +68,13 @@ void Display_ShowSetID(uint8_t index)
   DSP_SHOW_BOTTOMLINE_CHAR(4, I);
   DSP_SHOW_BOTTOMLINE_CHAR(5, D);
   
-  DSP_ACTIVATE();
+  displaystate = DSP_STATE_SETID;
+}
+
+void Display_SetShowTemperature()
+{
+  Display_ShowTemperature(Data_GetValue(currentshownvalue), currentshownvalue);
+  displaystate = DSP_STATE_SINGLE_TEMP;
 }
 
 // todo: replace some defines
@@ -93,8 +101,6 @@ void Display_ShowTemperature(uint16_t value, uint8_t index)
   DSP_SHOW_BOTTOMLINE_CHAR(3, SPACE);
   DSP_SHOW_BOTTOMLINE_NUM(4, (index / 10));
   DSP_SHOW_BOTTOMLINE_NUM(5, (index % 10));
-  
-  DSP_ACTIVATE();
 }
 
 // display initialization
@@ -124,12 +130,6 @@ void Display_Init()
   LCDBPCTL1 = 0x00FF;
 }
 
-// for application, to activate the display with old values
-void Display_Activate()
-{
-  DSP_ACTIVATE();
-}
-
 // called cyclically, first time after full initialization
 // consumes button events
 void Display_MainFunction()
@@ -142,22 +142,50 @@ void Display_MainFunction()
       // lcd timeout
       DSP_DEACTIVATE();
     }
+    else
+    {
+      // update shown data
+      if (displaystate == DSP_STATE_SINGLE_TEMP)
+      {
+        Display_ShowTemperature(Data_GetValue(currentshownvalue), currentshownvalue);
+      }
+    }
   }
 }
 
 void Display_Button_Up_Pressed()
 {
-  if (displaystate == DSP_STATE_NODE_LIST)
+  switch (displaystate) 
   {
-    //TODO: select node bellow current Node
+    case DSP_STATE_SYNC:
+      break;
+    case DSP_STATE_SETID:
+      MyID = (MyID + 1) % 64;
+      Display_ShowSetID(MyID);
+      break;
+    case DSP_STATE_SINGLE_TEMP:
+      // next value
+      currentshownvalue = (currentshownvalue + 1) % 64;
+      Display_ShowTemperature(Data_GetValue(currentshownvalue), currentshownvalue);
+      break;
   }
 }
 
 void Display_Button_Down_Pressed()
 {
-  if (displaystate == DSP_STATE_NODE_LIST)
+  switch (displaystate) 
   {
-    //TODO: select node above current Node
+    case DSP_STATE_SYNC:
+      break;
+    case DSP_STATE_SETID:
+      MyID = (MyID - 1) % 64;
+      Display_ShowSetID(MyID);
+      break;
+    case DSP_STATE_SINGLE_TEMP:
+      // previous value
+      currentshownvalue = (currentshownvalue - 1) % 64;
+      Display_ShowTemperature(Data_GetValue(currentshownvalue), currentshownvalue);
+      break;
   }
 }
 
@@ -165,22 +193,27 @@ void Display_Button_Star_Pressed()
 {
   switch (displaystate) 
   {
-    case DSP_STATE_SINGLE_TEMP:
-      //TODO: Show Node List
-      displaystate = DSP_STATE_NODE_LIST;
+    case DSP_STATE_SYNC:
       break;
-    case DSP_STATE_NODE_LIST:
-      //TODO: Show new node;
-      displaystate = DSP_STATE_SINGLE_TEMP;
+    case DSP_STATE_SETID:
+      break;
+    case DSP_STATE_SINGLE_TEMP:
       break;
   }
 }
 
 void Display_Button_Num_Pressed()
 {
-  if (displaystate == DSP_STATE_NODE_LIST)
+  switch (displaystate) 
   {
-    //TODO: select odl node
+    case DSP_STATE_SYNC:
+      break;
+    case DSP_STATE_SETID:
+      break;
+    case DSP_STATE_SINGLE_TEMP:
+      currentshownvalue = MyID;
+      Display_ShowTemperature(Data_GetValue(currentshownvalue), currentshownvalue);
+      break;
   }
 }
 
@@ -191,30 +224,34 @@ void Display_Handler(EventMaskType ev)
   {
     ClearEvent(EVENT_BUTTON_UP);
     Display_Button_Up_Pressed();
+    DSP_ACTIVATE();
   }
 
   if (EVENT_BUTTON_DOWN == (ev & EVENT_BUTTON_DOWN))
   {
     ClearEvent(EVENT_BUTTON_DOWN);
     Display_Button_Down_Pressed();
+    DSP_ACTIVATE();
   }
 
   if (EVENT_BUTTON_NUM == (ev & EVENT_BUTTON_NUM))
   {
     ClearEvent(EVENT_BUTTON_NUM);
     Display_Button_Num_Pressed();
+    DSP_ACTIVATE();
   }
 
   if (EVENT_BUTTON_STAR == (ev & EVENT_BUTTON_STAR))
   {
     ClearEvent(EVENT_BUTTON_STAR);
     Display_Button_Star_Pressed();
+    DSP_ACTIVATE();
   }
 
   if (EVENT_BUTTON_BACKLIGHT == (ev & EVENT_BUTTON_BACKLIGHT))
   {
     ClearEvent(EVENT_BUTTON_BACKLIGHT);
-    Display_Activate();
+    DSP_ACTIVATE();
   }
 
   Display_MainFunction();
