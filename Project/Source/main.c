@@ -57,20 +57,6 @@ int main(void)
       switch(mainstate)
       {
         case MAIN_STATE_INIT:
-<<<<<<< HEAD
-          //warte 16 sekunden plus Random(17);
-          // todo implement
-          if (Com_NetworkExists() == 1)
-          {
-            master = 0;
-            mainstate = MAIN_STATE_INIT_CHILD;
-          }
-          else
-          {
-            master = 1;
-            mainstate = MAIN_STATE_INIT_MASTER;
-          }
-=======
           cylces++;
           if (cycles > 16*4) { //Should wait + Random(17) but dunno how
               while(Com_IsInitialized == 0){};
@@ -84,9 +70,8 @@ int main(void)
                 master = 1;
                 mainstate = MAIN_STATE_INIT_MASTER;
               }
->>>>>>> eaf88985a2f472389603c5a01ed87bb370de8050
-          break;
           }
+          break;
         case MAIN_STATE_INIT_MASTER:
           //TODO Implement
           mainstate = MAIN_STATE_COM;
