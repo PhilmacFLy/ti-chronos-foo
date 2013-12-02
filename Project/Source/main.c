@@ -56,6 +56,7 @@ int main(void)
       {
         case MAIN_STATE_INIT:
           //warte 16 sekunden plus Random(17);
+          // todo implement
           if (Com_NetworkExists() == 1)
           {
             master = 0;

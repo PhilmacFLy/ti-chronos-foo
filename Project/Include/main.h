@@ -12,6 +12,7 @@
 # define MAIN_STATE_INIT_MASTER		(2)
 # define MAIN_STATE_INIT_CHILD		(3)
 # define MAIN_STATE_COM	        	(4)
+
 extern uint8_t MyID;
 int main(void);
 
