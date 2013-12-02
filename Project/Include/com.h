@@ -35,6 +35,7 @@
 
 void Com_Handler(EventMaskType ev);
 void Com_Init();
+uint8_t Com_IsInitialized();
 
 uint8_t Com_NetworkExists();
 
