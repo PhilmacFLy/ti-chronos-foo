@@ -23,71 +23,76 @@ uint8_t master = 0;
 
 int main(void)
 {
-  switch(mainstate)
-  {
   // Stop watchdog timer to prevent time out reset
-    case MAIN_STATE_UNINIT: 
-      WDTCTL = WDTPW | WDTHOLD; // disable WDG
+  WDTCTL = WDTPW | WDTHOLD; // disable WDG
     
-      // initialize all modules
-      Timer_Init();
-      Button_Init();
-      Temperature_Init();
-      Display_Init();
-      Flash_Init();
-      Data_Init();
-      Scheduler_Init();   // enables interrupts, so should be last one
-      mainstate = MAIN_STATE_INIT;
-      break;
-    case MAIN_STATE_INIT:
-      //warte 16 sekunden plus Random(17);
-      if Com_Networkexists = 1 then
-      {
-	master = 0;
-	mainstate = MAIN_STATE_INIT_CHILD;
-      }
-      else
-      {
-	master = 1;
-	mainstate = MAIN_STATE_INIT_MASTER;
-      }
-      break;
-    case MAIN_STATE_INIT_MASTER:
-      //TODO Implement
-      mainstate = MAIN_STATE_COM_MASTER;
-      break;
-    case MAIN_STATE_INIT_CHILD:
-      //TODO Implement
-      mainstate = MAIN_STATE_COM_CHILD;
-      break;
-    case MAIN_STATE_COM_MASTER:
-      //TODO Implement
-      break;
-    case MAIN_STATE_COM_CHILD;
-      //TODO Implement
-      break;
-  }
-
+  // initialize all modules
+  Timer_Init();
+  Button_Init();
+  Temperature_Init();
+  Display_Init();
+  Flash_Init();
+  Data_Init();
+  Scheduler_Init();   // enables interrupts, so should be last one
+  mainstate = MAIN_STATE_INIT;
+  
+  Timer_Start(0); // start the timer to get a halfway proper timebase
+  
   while(1)
   {
-    // go to sleep
+    // go to sleep, wakeup through EVENT_COM_SLOT_START
     EnterSleep();
-    // get all events and dispatch
-    EventMaskType ev = GetAllEvents();
     
-    if (EVENT_DISPLAY_TICK == (ev & EVENT_DISPLAY_TICK))
-    {
-      ClearEvent(EVENT_DISPLAY_TICK);
-      Display_Handler(ev);
-    }
+    // get all events and dispatch in the switch construct
+    EventMaskType ev;
+    ev = GetAllEvents();
     
     if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START) ||
         EVENT_COM_SLOT_RX_START == (ev & EVENT_COM_SLOT_RX_START) ||
         EVENT_COM_SLOT_TX_START == (ev & EVENT_COM_SLOT_TX_START) ||
         EVENT_COM_SLOT_RX_TX_SYNC == (ev & EVENT_COM_SLOT_RX_TX_SYNC))
     {
-      // no clear in here, dispatching in Com_Handler
-      Com_Handler(ev);
+      switch(mainstate)
+      {
+        case MAIN_STATE_INIT:
+          //warte 16 sekunden plus Random(17);
+          if (Com_NetworkExists() == 1)
+          {
+            master = 0;
+            mainstate = MAIN_STATE_INIT_CHILD;
+          }
+          else
+          {
+            master = 1;
+            mainstate = MAIN_STATE_INIT_MASTER;
+          }
+          break;
+          
+        case MAIN_STATE_INIT_MASTER:
+          //TODO Implement
+          mainstate = MAIN_STATE_COM;
+          break;
+          
+        case MAIN_STATE_INIT_CHILD:
+          //TODO Implement
+          mainstate = MAIN_STATE_COM;
+          break;
+          
+        case MAIN_STATE_COM:
+          {
+            // no clear in here, dispatching in Com_Handler
+            Com_Handler(ev);
+          }
+          break;
+      }
     }
+    
+    // dispatch display event if incoming
+    if (EVENT_DISPLAY_TICK == (ev & EVENT_DISPLAY_TICK))
+    {
+      ClearEvent(EVENT_DISPLAY_TICK);
+      Display_Handler(ev);
+    }
+    
   }
 }

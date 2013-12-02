@@ -116,22 +116,6 @@ void Timer_CorrectSync(uint16_t expectedmicrotick)
 {
   // faster version
   nextnummicroticks += (TA0R - expectedmicrotick);
-  
-  /*
-  // get current tick
-  uint16_t currentmicrotick = TA0R;
-  // own clock to slow, run faster
-  if (expectedmicrotick > currentmicrotick)
-  {
-    nextnummicroticks -= (expectedmicrotick - currentmicrotick);
-  }
-  
-  // own clock to fast, run slower
-  if (expectedmicrotick < currentmicrotick)
-  {
-    nextnummicroticks += (currentmicrotick - expectedmicrotick);
-  }
-  */
 }
 
 // wait x ticks ~ 1 us with timer 1

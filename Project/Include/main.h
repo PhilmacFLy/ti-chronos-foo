@@ -9,10 +9,9 @@
 
 # define MAIN_STATE_UNINIT		(0)
 # define MAIN_STATE_INIT		(1)
-# define MAIN_STATE_INIT_Master		(2)
-# define MAIN_STATE_INIT_Child		(3)
-# define MAIN_STATE_COM_Master		(4)
-# define MAIN_STATE_COM_Child		(5)
+# define MAIN_STATE_INIT_MASTER		(2)
+# define MAIN_STATE_INIT_CHILD		(3)
+# define MAIN_STATE_COM	        	(4)
 extern uint8_t MyID;
 int main(void);
 

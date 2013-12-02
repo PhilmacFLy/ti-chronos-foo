@@ -34,17 +34,14 @@ void Temperature_Init()
 }
 
 // Start Conversion
-uint16_t Temperature_Get(uint8_t TEMP_ART)
+uint16_t Temperature_Get(/*uint8_t TEMP_ART*/)
 {
-    sint16_t temp2;
     ADC12CTL0 |= ADC12SC;                   // Sampling and conversion start
     
     // LPM3 with interrupts enabled
     EnableInterrupts(); // not necessary
     EnterSleep();
     
-    // messwert1: 680 mV = 0 grad
-    // messwert2: 850 mV = 70 grad
     // y = grad celsius
     // x = voltage                                      (A10/4096*1500mV) - 680mV
     // y = mx+t
@@ -53,26 +50,7 @@ uint16_t Temperature_Get(uint8_t TEMP_ART)
     // t = 0
     // => temperature = ((A10 / 4096 * 1500mV) - 680mV) * (1/2.25mV)
     // = (A10 - 1855) * (667 / 4096)
-    temp2 = (((uint32_t) ((uint32_t) temp - 1855)) * 667 * 10) / 4096;
-    temp2 = temp2 + 1;
-    
-    /*
-    if (TEMP_ART == TEMP_C) 
-    {
-    // Temperature in Celsius
-    // ((A10/4096*1500mV) - 894mV)*(1/3.66mV) = (A10/4096*410) - 244
-    // = (A10 - 2438) * (410 / 4096)
-    temp = ((temp - 2438) * 410) / 4096;
-    }
-    else
-    {
-    // Temperature in Fahrenheit
-    // ((A10/4096*1500mV) - 829mV)*(1/2.033mV) = (A10/4096*738) - 408
-    // = (A10 - 2264) * (738 / 4096)
-    temp = ((temp - 2264) * 738) / 4096;
-    }
-    __no_operation();                       // SET BREAKPOINT HERE
-    */
+    temp = (((uint32_t) ((uint32_t) temp - 1855)) * 667 * 10) / 4096;
     
     return (uint16_t) temp;
 }

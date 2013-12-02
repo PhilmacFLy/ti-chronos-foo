@@ -36,6 +36,6 @@
 void Com_Handler(EventMaskType ev);
 void Com_Init();
 
-uint8_t Com_Networkexists();
+uint8_t Com_NetworkExists();
 
 #endif /* __COM_H__ */

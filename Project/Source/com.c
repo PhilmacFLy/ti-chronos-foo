@@ -13,9 +13,10 @@ void Com_Handler(EventMaskType ev)
   // todo: implement
 }
 
-uint8_t Com_Networkexists();
+uint8_t Com_NetworkExists()
 {
   // TODO: Implement;
+  return 0;
 }
 
 void Com_Init()
