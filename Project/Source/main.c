@@ -20,6 +20,7 @@
 uint8_t MyID = 0xFF;
 uint8_t mainstate = MAIN_STATE_UNINIT;
 uint8_t master = 0;
+uint8_t cycles;
 
 int main(void)
 {
@@ -33,6 +34,7 @@ int main(void)
   Display_Init();
   Flash_Init();
   Data_Init();
+  Com_Init();
   Scheduler_Init();   // enables interrupts, so should be last one
   mainstate = MAIN_STATE_INIT;
   
@@ -55,6 +57,7 @@ int main(void)
       switch(mainstate)
       {
         case MAIN_STATE_INIT:
+<<<<<<< HEAD
           //warte 16 sekunden plus Random(17);
           // todo implement
           if (Com_NetworkExists() == 1)
@@ -67,8 +70,23 @@ int main(void)
             master = 1;
             mainstate = MAIN_STATE_INIT_MASTER;
           }
+=======
+          cylces++;
+          if (cycles > 16*4) {
+              while(Com_IsInitialized == 0){};
+              if (Com_NetworkExists() == 1)
+              {
+                master = 0;
+                mainstate = MAIN_STATE_INIT_CHILD;
+              }
+              else
+              {
+                master = 1;
+                mainstate = MAIN_STATE_INIT_MASTER;
+              }
+>>>>>>> eaf88985a2f472389603c5a01ed87bb370de8050
           break;
-          
+          }
         case MAIN_STATE_INIT_MASTER:
           //TODO Implement
           mainstate = MAIN_STATE_COM;

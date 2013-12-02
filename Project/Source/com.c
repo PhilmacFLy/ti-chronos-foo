@@ -64,6 +64,11 @@ uint8_t Com_NetworkExists()
   return 0;
 }
 
+uint8_t Com_IsInitialized()
+{
+
+}
+
 void Com_Init()
 {
   uint8_t i;
