@@ -22,6 +22,9 @@ uint8_t mainstate = MAIN_STATE_UNINIT;
 uint8_t master = 0;
 uint8_t cycles;
 
+uint8_t temperaturecounter = 0;
+uint8_t MyDataCount = 0;
+
 int main(void)
 {
   // Stop watchdog timer to prevent time out reset
@@ -95,6 +98,19 @@ int main(void)
     if (EVENT_DISPLAY_TICK == (ev & EVENT_DISPLAY_TICK))
     {
       ClearEvent(EVENT_DISPLAY_TICK);
+      
+      if (temperaturecounter == 0)
+      {
+        // every second: measure temperature (each 8th display update)
+        uint16_t newtemp = Temperature_Get();
+        if (newtemp != Data_GetValue(MyID))
+        {
+          Data_SetValue(MyID, newtemp, ++MyDataCount);
+          Com_FlagDataForSend(MyID);
+        }
+      }
+      temperaturecounter = (temperaturecounter + 1) % 8;
+      
       Display_Handler(ev);
     }
     

@@ -20,12 +20,12 @@
       <file>$PROJ_DIR$\Debug\Obj\scheduler.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\timer.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\timer.r43</file>
       <file>$PROJ_DIR$\Include\scheduler.h</file>
       <file>$PROJ_DIR$\Debug\Obj\temperature.r43</file>
-      <file>$PROJ_DIR$\Debug\Obj\timer.r43</file>
-      <file>$PROJ_DIR$\Debug\Obj\button.r43</file>
       <file>$PROJ_DIR$\Debug\Obj\main.r43</file>
       <file>$TOOLKIT_DIR$\config\lnkCC430F6137.xcl</file>
+      <file>$PROJ_DIR$\Debug\Obj\button.r43</file>
       <file>$PROJ_DIR$\Debug\Exe\YASN_Watch.d43</file>
       <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
       <file>$PROJ_DIR$\Debug\Obj\YASN_Watch.pbd</file>
@@ -99,7 +99,7 @@
       <outputs>
         <tool>
           <name>ICC430</name>
-          <file> 17</file>
+          <file> 19</file>
         </tool>
         <tool>
           <name>BICOMP</name>
@@ -109,11 +109,11 @@
       <inputs>
         <tool>
           <name>ICC430</name>
-          <file> 37 10 26 21 28 14 24 34</file>
+          <file> 37 10 26 21 28 15 24 34</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 37 10 26 21 28 14 24 34</file>
+          <file> 37 10 26 21 28 15 24 34</file>
         </tool>
       </inputs>
     </file>
@@ -132,11 +132,11 @@
       <inputs>
         <tool>
           <name>ICC430</name>
-          <file> 37 10 26 21 28 24 35 27 23</file>
+          <file> 37 10 26 21 28 24 35 27 38 23</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 37 10 26 21 28 24 35 27 23</file>
+          <file> 37 10 26 21 28 24 35 27 38 23</file>
         </tool>
       </inputs>
     </file>
@@ -155,11 +155,11 @@
       <inputs>
         <tool>
           <name>ICC430</name>
-          <file> 37 10 26 21 28 14 24 49 35 36</file>
+          <file> 37 10 26 21 28 15 24 49 35 36</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 37 10 26 21 28 14 24 49 35 36</file>
+          <file> 37 10 26 21 28 15 24 49 35 36</file>
         </tool>
       </inputs>
     </file>
@@ -178,11 +178,11 @@
       <inputs>
         <tool>
           <name>ICC430</name>
-          <file> 37 10 26 21 28 14 24</file>
+          <file> 37 10 26 21 28 15 24</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 37 10 26 21 28 14 24</file>
+          <file> 37 10 26 21 28 15 24</file>
         </tool>
       </inputs>
     </file>
@@ -201,11 +201,11 @@
       <inputs>
         <tool>
           <name>ICC430</name>
-          <file> 37 10 26 21 28 14 47</file>
+          <file> 37 10 26 21 28 15 47</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 37 10 26 21 28 14 47</file>
+          <file> 37 10 26 21 28 15 47</file>
         </tool>
       </inputs>
     </file>
@@ -214,7 +214,7 @@
       <outputs>
         <tool>
           <name>ICC430</name>
-          <file> 18</file>
+          <file> 17</file>
         </tool>
         <tool>
           <name>BICOMP</name>
@@ -224,11 +224,11 @@
       <inputs>
         <tool>
           <name>ICC430</name>
-          <file> 37 10 26 21 28 27 14 34 38 36 24 23 47 49 35</file>
+          <file> 37 10 26 21 28 27 15 34 38 36 24 23 47 49 35</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 37 10 26 21 28 27 14 34 38 36 24 23 47 49 35</file>
+          <file> 37 10 26 21 28 27 15 34 38 36 24 23 47 49 35</file>
         </tool>
       </inputs>
     </file>
@@ -247,11 +247,11 @@
       <inputs>
         <tool>
           <name>ICC430</name>
-          <file> 37 10 26 21 28 14</file>
+          <file> 37 10 26 21 28 15</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 37 10 26 21 28 14</file>
+          <file> 37 10 26 21 28 15</file>
         </tool>
       </inputs>
     </file>
@@ -260,7 +260,7 @@
       <outputs>
         <tool>
           <name>ICC430</name>
-          <file> 15</file>
+          <file> 16</file>
         </tool>
         <tool>
           <name>BICOMP</name>
@@ -270,11 +270,11 @@
       <inputs>
         <tool>
           <name>ICC430</name>
-          <file> 37 10 26 21 28 23 24 14 38</file>
+          <file> 37 10 26 21 28 23 24 15 38</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 37 10 26 21 28 23 24 14 38</file>
+          <file> 37 10 26 21 28 23 24 15 38</file>
         </tool>
       </inputs>
     </file>
@@ -283,7 +283,7 @@
       <outputs>
         <tool>
           <name>ICC430</name>
-          <file> 16</file>
+          <file> 14</file>
         </tool>
         <tool>
           <name>BICOMP</name>
@@ -293,11 +293,11 @@
       <inputs>
         <tool>
           <name>ICC430</name>
-          <file> 37 10 26 21 28 23 24 14 27</file>
+          <file> 37 10 26 21 28 23 24 15 27</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 37 10 26 21 28 23 24 14 27</file>
+          <file> 37 10 26 21 28 23 24 15 27</file>
         </tool>
       </inputs>
     </file>
@@ -306,7 +306,7 @@
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 19 39 17 46 45 41 29 44 18 25 15 16 30</file>
+          <file> 18 39 19 46 45 41 29 44 17 25 16 14 30</file>
         </tool>
       </inputs>
     </file>

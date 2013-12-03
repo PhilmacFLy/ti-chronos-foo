@@ -8,6 +8,7 @@
 #include "event.h"
 #include "main.h"
 #include "timer.h"
+#include "temperature.h"
 #include "com.h"
 
 uint8_t Com_States[64];
@@ -31,7 +32,7 @@ void Com_Handler(EventMaskType ev)
     if (currentcomstate == COM_MODE_TX)
     {
       // TODO: Prepare TX Data for Send and give it to driver
-      // TODO: or increment timeout counter?
+      // TODO: or increment timeout counter
     }
   }
   
@@ -39,15 +40,14 @@ void Com_Handler(EventMaskType ev)
   {
     ClearEvent(EVENT_COM_SLOT_RX_START);
     
-    if (currentcomstate == COM_MODE_PARENT_RX
-        || currentcomstate == COM_MODE_CHILD_RX)
+    if (currentcomstate == COM_MODE_PARENT_RX || currentcomstate == COM_MODE_CHILD_RX)
     {
       // TODO: Activate RX
       Timer_Delay(20000); // TODO: recalculate! currently ~20 ms
       // TODO: wait for RX event / timeout and disable RX mode
       if (currentcomstate == COM_MODE_PARENT_RX)
       {
-        // TODO: Resynchronisation API
+        // TODO: Resynchronisation, because parent sent us data
       }
       // TODO: read data and sort in
       // else TODO: dispatch RX timeout event (timer returns normally)
@@ -71,6 +71,12 @@ void Com_Handler(EventMaskType ev)
     
     // MAKE SYNC STUFF
   }
+}
+
+// only for own temperature because of main does this job
+void Com_FlagDataForSend(uint8_t index)
+{
+  if (index < 64) Com_States[index] |= NEWDATABIT_MASK;
 }
 
 uint8_t Com_NetworkExists()
