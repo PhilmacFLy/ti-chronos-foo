@@ -13,10 +13,11 @@
 uint8_t Com_States[64];
 uint8_t CurrentSlot;
 
-// TODO implement
+// not yet finished
+// handles all communication specific stuff
 void Com_Handler(EventMaskType ev)
 {
-  // next cycle
+  // next cycle, so dispatch this here
   if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START)) CurrentSlot = (CurrentSlot + 1) % 64;
   
   uint8_t currentcomstate = (Com_States[CurrentSlot] & COM_MODE_MASK);
@@ -29,7 +30,8 @@ void Com_Handler(EventMaskType ev)
     
     if (currentcomstate == COM_MODE_TX)
     {
-      // TODO: Prepare TX Data
+      // TODO: Prepare TX Data for Send and give it to driver
+      // TODO: or increment timeout counter?
     }
   }
   
@@ -37,24 +39,37 @@ void Com_Handler(EventMaskType ev)
   {
     ClearEvent(EVENT_COM_SLOT_RX_START);
     
-    // TODO: Activate RX
-    Timer_Delay(20000); // TODO recalculate!
-    // TODO: Dispatch RX Event and react
+    if (currentcomstate == COM_MODE_PARENT_RX
+        || currentcomstate == COM_MODE_CHILD_RX)
+    {
+      // TODO: Activate RX
+      Timer_Delay(20000); // TODO: recalculate! currently ~20 ms
+      // TODO: wait for RX event / timeout and disable RX mode
+      if (currentcomstate == COM_MODE_PARENT_RX)
+      {
+        // TODO: Resynchronisation API
+      }
+      // TODO: read data and sort in
+      // else TODO: dispatch RX timeout event (timer returns normally)
+    }
   }
     
   if (EVENT_COM_SLOT_TX_START == (ev & EVENT_COM_SLOT_TX_START))
   {
     ClearEvent(EVENT_COM_SLOT_TX_START);
     
-    // TODO: Activate Transmission
-    // TODO: Wait for end of transmission? is this necessary?
+    if (currentcomstate == COM_MODE_TX)
+    {
+      // TODO: Activate Transmission
+      // TODO: Wait for end of transmission? is this necessary?
+    }
   }
     
   if (EVENT_COM_SLOT_RX_TX_SYNC == (ev & EVENT_COM_SLOT_RX_TX_SYNC))
   {
     ClearEvent(EVENT_COM_SLOT_RX_TX_SYNC);
     
-    // MAKE SYNC SHIT
+    // MAKE SYNC STUFF
   }
 }
 
@@ -66,7 +81,8 @@ uint8_t Com_NetworkExists()
 
 uint8_t Com_IsInitialized()
 {
-
+  // TODO: Implement
+  return 0;
 }
 
 void Com_Init()

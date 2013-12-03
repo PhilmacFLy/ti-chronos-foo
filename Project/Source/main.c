@@ -57,9 +57,9 @@ int main(void)
       switch(mainstate)
       {
         case MAIN_STATE_INIT:
-          cylces++;
+          cycles++;
           if (cycles > 16*4) { //Should wait + Random(17) but dunno how
-              while(Com_IsInitialized == 0){};
+              while(Com_IsInitialized() == 0){};
               if (Com_NetworkExists() == 1)
               {
                 master = 0;

@@ -39,6 +39,7 @@ void Timer_Init()
   TA0CCTL4 |= CCIE;
   
   // SMCLK as clock source, with input divider /8
+  // so counting to 0x7FFF will result in about 250 ms
   TA0CTL = TASSEL__SMCLK | ID__8 | TACLR;
   
   // load CCR0 with number of microticks
