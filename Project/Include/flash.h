@@ -11,6 +11,7 @@
 
 void Flash_Write(uint8_t* data, uint8_t len);
 void Flash_Read(uint8_t* data, uint8_t len);
+void Flash_Random(uint8_t* data, unit8_t len);
 
 void Flash_Init();
 
