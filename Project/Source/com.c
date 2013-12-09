@@ -20,9 +20,36 @@ uint8_t LastSentData = 0;
 uint8_t TxBuffer[64];
 uint8_t TxCount;
 
+uint8_t mainstate = MAIN_STATE_UNINIT;
+uint8_t master = 0;
+uint8_t cycles = 0;
+
+void Com_Handler(EventMaskType ev)
+{
+      switch(mainstate)
+      {
+        case MAIN_STATE_INIT:
+          Com_Handler_StartupListen(ev);
+          break;
+        case MAIN_STATE_INIT_MASTER:
+          //TODO Implement
+          mainstate = MAIN_STATE_COM;
+          break;
+          
+        case MAIN_STATE_INIT_CHILD:
+          //TODO Implement
+          mainstate = MAIN_STATE_COM;
+          break;
+          
+        case MAIN_STATE_COM:
+          Com_Handler_Mainstate(ev);
+          break;
+      }
+}
+
 // not yet finished
 // handles all communication specific stuff
-void Com_Handler(EventMaskType ev)
+void Com_Handler_Mainstate(EventMaskType ev)
 {
   // next cycle, so dispatch this here
   if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START)) CurrentSlot = (CurrentSlot + 1) % 64;
@@ -110,6 +137,28 @@ void Com_Handler(EventMaskType ev)
   }
 }
 
+void Com_Handler_StartupListen(EventMaskType ev)
+{
+          if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START))
+          {
+          cycles++;
+          ClearEvent(EVENT_COM_SLOT_START);
+          }
+          if (cycles > 16*4) { //Should wait + Random(17) but dunno how
+              while(Com_IsInitialized() == 0){};
+              if (Com_NetworkExists() == 1)
+              {
+                master = 0;
+                mainstate = MAIN_STATE_INIT_CHILD;
+              }
+              else
+              {
+                master = 1;
+                mainstate = MAIN_STATE_INIT_MASTER;
+              }
+          }
+}
+
 // only for own temperature because of main does this job
 void Com_FlagDataForSend(uint8_t index)
 {
@@ -133,6 +182,7 @@ void Com_Init()
   uint8_t i;
   for(i = 0; i < 64; i++) Com_States[i] = 0;
   Com_States[MyID] |= COM_MODE_TX;
+  mainstate = MAIN_STATE_INIT;
 }
 
 void Com_Start(uint8_t slot)
