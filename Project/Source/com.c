@@ -26,30 +26,28 @@ uint8_t cycles = 0;
 
 void Com_Handler(EventMaskType ev)
 {
-      switch(mainstate)
-      {
-        case MAIN_STATE_INIT:
-          Com_Handler_StartupListen(ev);
-          break;
-        case MAIN_STATE_INIT_MASTER:
-          //TODO Implement
-          mainstate = MAIN_STATE_COM;
-          break;
-          
-        case MAIN_STATE_INIT_CHILD:
-          //TODO Implement
-          mainstate = MAIN_STATE_COM;
-          break;
-          
-        case MAIN_STATE_COM:
-          Com_Handler_Mainstate(ev);
-          break;
-      }
+  switch(mainstate)
+  {
+    case MAIN_STATE_INIT:
+      Com_Handler_StartupListen(ev);
+      break;
+    case MAIN_STATE_INIT_MASTER:
+      //TODO Implement
+      mainstate = MAIN_STATE_COM;
+      break;       
+    case MAIN_STATE_INIT_CHILD:
+      //TODO Implement
+      mainstate = MAIN_STATE_COM;
+      break; 
+    case MAIN_STATE_COM:
+      Com_Handler_NormalCommunication(ev);
+      break;
+  }
 }
 
 // not yet finished
 // handles all communication specific stuff
-void Com_Handler_Mainstate(EventMaskType ev)
+void Com_Handler_NormalCommunication(EventMaskType ev)
 {
   // next cycle, so dispatch this here
   if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START)) CurrentSlot = (CurrentSlot + 1) % 64;
@@ -146,8 +144,13 @@ void Com_Handler_StartupListen(EventMaskType ev)
     ClearEvent(EVENT_COM_SLOT_START);
     cycles++;
   }
+  if (MyID == 0)
+  {
+    // TODO Implement switch to master mode
+  }
   if (cycles > 16*4)
-  { //Should wait + Random(17) but dunno how
+  {
+    // Should wait + Random(17) but dunno how
     if (Com_NetworkExists() == 1)
     {
       master = 0;

@@ -35,7 +35,7 @@
 # define NEWDATABIT_MASK        (0x80u) // this bit is used to indicate the next-to-send stuff
 
 void Com_Handler(EventMaskType ev);
-void Com_Handler_Mainstate(EventMaskType ev);
+void Com_Handler_NormalCommunication(EventMaskType ev);
 void Com_Handler_StartupListen(EventMaskType ev);
 void Com_Init();
 void Com_FlagDataForSend(uint8_t index);

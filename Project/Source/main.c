@@ -18,8 +18,6 @@
 #include "main.h"
 
 uint8_t MyID = 0xFF;
-uint8_t mainstate = MAIN_STATE_UNINIT;
-uint8_t master = 0;
 
 uint8_t temperaturecounter = 0;
 uint8_t MyDataCount = 0;
@@ -41,6 +39,8 @@ int main(void)
   
   Timer_Start(0); // start the timer to get a halfway proper timebase
   
+  // TODO: implement asking for ID
+  
   while(1)
   {
     // go to sleep, wakeup through EVENT_COM_SLOT_START
@@ -55,37 +55,8 @@ int main(void)
         EVENT_COM_SLOT_TX_START == (ev & EVENT_COM_SLOT_TX_START) ||
         EVENT_COM_SLOT_RX_TX_SYNC == (ev & EVENT_COM_SLOT_RX_TX_SYNC))
     {
-      switch(mainstate)
-      {
-        case MAIN_STATE_INIT:
-          if (Com_NetworkExists() == 1)
-          {
-            master = 0;
-            mainstate = MAIN_STATE_INIT_CHILD;
-          }
-          else
-          {
-            master = 1;
-            mainstate = MAIN_STATE_INIT_MASTER;
-          }
-          break;
-        case MAIN_STATE_INIT_MASTER:
-          //TODO Implement
-          mainstate = MAIN_STATE_COM;
-          break;
-          
-        case MAIN_STATE_INIT_CHILD:
-          //TODO Implement
-          mainstate = MAIN_STATE_COM;
-          break;
-          
-        case MAIN_STATE_COM:
-          {
-            // no clear in here, dispatching in Com_Handler
-            Com_Handler(ev);
-          }
-          break;
-      }
+      // no clearing in here, will be done in subhandlers
+      Com_Handler(ev);
     }
     
     // dispatch display event if incoming

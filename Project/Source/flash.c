@@ -45,15 +45,14 @@ void Flash_Read(uint8_t* data, uint8_t len)
 
     for (i = 0; i < len; i++)
     {
-      data[i] = flashadr[i];                  // rear value from flash
+      data[i] = flashadr[i];                  // read value from flash
     }
     
     EnableInterrupts();
   }
-  // todo implement
 }
 
-void Flash_Random(uint8_t* data, unit8_t len)
+void Flash_Random(uint8_t* data, uint8_t len)
 {
     if (len <= 0x7F)
     {
@@ -64,12 +63,11 @@ void Flash_Random(uint8_t* data, unit8_t len)
 
       for (i = 0x80; i < len; i++)
       {
-        data[i] = flashadr[i];                  // rear value from flash
+        data[i] = flashadr[i];                  // read value from flash
       }
 
       EnableInterrupts();
     }
-    // todo implement
 }
 
 // initialize flash module
