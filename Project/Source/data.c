@@ -8,14 +8,21 @@
 #include "data.h"
 
 static uint16_t data[64];
+static uint8_t datacount[64];
 
-// saves data in array
-void Data_SetValue(uint8_t index, uint16_t value)
+// saves data in array and returns 1 if save is accepted
+uint8_t Data_SetValue(uint8_t index, uint16_t value, uint8_t count)
 {
   if (index < 64)
   {
-    data[index] = value;
+    if (datacount[index] < count || (datacount[index] > 220 && count < 30))
+    {
+      data[index] = value;
+      datacount[index] = count;
+      return 1;
+    }
   }
+  return 0;
 }
 
 // reads data from array
@@ -29,6 +36,10 @@ uint16_t Data_GetValue(uint8_t index)
 void Data_Init()
 {
   uint8_t i;
-  for (i = 0; i < 64; i++) data[i] = INVALID_VALUE;
+  for (i = 0; i < 64; i++)
+  {
+    data[i] = INVALID_VALUE;
+    datacount[i] = 0;
+  }
 }
 
