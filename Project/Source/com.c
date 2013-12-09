@@ -8,11 +8,17 @@
 #include "event.h"
 #include "main.h"
 #include "timer.h"
+#include "data.h"
 #include "temperature.h"
 #include "com.h"
 
 uint8_t Com_States[64];
 uint8_t CurrentSlot;
+uint8_t DistanceToMaster = 0;
+uint8_t NumChildren = 0;
+uint8_t LastSentData = 0;
+uint8_t TxBuffer[64];
+uint8_t TxCount;
 
 // not yet finished
 // handles all communication specific stuff
@@ -31,8 +37,39 @@ void Com_Handler(EventMaskType ev)
     
     if (currentcomstate == COM_MODE_TX)
     {
-      // TODO: Prepare TX Data for Send and give it to driver
-      // TODO: or increment timeout counter
+      // Prepare TX Data for Send and give it to driver
+      uint8_t i = 0;
+      uint8_t TxCount = 3;
+      TxBuffer[0] = MyID;
+      TxBuffer[1] = DistanceToMaster;
+      TxBuffer[2] = NumChildren;
+      for (i = 0; i < 16; i++) // max 16 values
+      {
+        uint8_t idx = LastSentData + i;
+        if ( ((Com_States[idx] & NEWDATABIT_MASK) == NEWDATABIT_MASK)
+          || ((Com_States[idx] & TIMEOUT_MASK) == TIMEOUT_MASK) )
+        {
+          uint16_t val = Data_GetValue(LastSentData + i);
+          uint8_t cnt = Data_GetCount(LastSentData + i);
+          // mask a little bit to need not so much bytes
+          if (val != INVALID_VALUE)
+          {
+            TxBuffer[TxCount++] = (idx << 2) | ((uint8_t) (val >> 8));
+            TxBuffer[TxCount++] = (uint8_t) (0xFF & val);
+            TxBuffer[TxCount++] = cnt;
+            // clear newdatabit mask and timeout counter
+            Com_States[idx] = Com_States[idx] & COM_MODE_MASK;
+          }
+        }
+        else
+        {
+          // increment timeout counter
+          // yeah, probably improvable...
+          Com_States[idx] = (Com_States[idx] & ~(TIMEOUT_MASK)) | ((Com_States[idx] + 1) & TIMEOUT_MASK);
+          // TODO: implement timeout functionality for this
+        }
+      }
+      LastSentData = (LastSentData + 16) % 64;
     }
   }
   
