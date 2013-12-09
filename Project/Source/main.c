@@ -61,18 +61,15 @@ int main(void)
       switch(mainstate)
       {
         case MAIN_STATE_INIT:
-          if (MyID == 1) {
-              while(Com_IsInitialized() == 0){};
-              if (Com_NetworkExists() == 1)
-              {
-                master = 0;
-                mainstate = MAIN_STATE_INIT_CHILD;
-              }
-              else
-              {
-                master = 1;
-                mainstate = MAIN_STATE_INIT_MASTER;
-              }
+          if (Com_NetworkExists() == 1)
+          {
+            master = 0;
+            mainstate = MAIN_STATE_INIT_CHILD;
+          }
+          else
+          {
+            master = 1;
+            mainstate = MAIN_STATE_INIT_MASTER;
           }
           break;
         case MAIN_STATE_INIT_MASTER:

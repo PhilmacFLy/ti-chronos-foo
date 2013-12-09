@@ -53,6 +53,25 @@ void Flash_Read(uint8_t* data, uint8_t len)
   // todo implement
 }
 
+void Flash_Random(uint8_t* data, unit8_t len)
+{
+    if (len <= 0x7F)
+    {
+      DisableInterrupts();                      // 5xx workaround: disable global
+                                                // interrupt
+      uint8_t i;
+      uint8_t* flashadr = (uint8_t*) FLASH_ADDRESS_SECTOR_C;
+
+      for (i = 0x80; i < len; i++)
+      {
+        data[i] = flashadr[i];                  // rear value from flash
+      }
+
+      EnableInterrupts();
+    }
+    // todo implement
+}
+
 // initialize flash module
 void Flash_Init()
 {
