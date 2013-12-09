@@ -21,6 +21,7 @@ uint8_t MyID = 0xFF;
 uint8_t mainstate = MAIN_STATE_UNINIT;
 uint8_t master = 0;
 uint8_t cycles;
+uint8_t cyclelimit;
 
 uint8_t temperaturecounter = 0;
 uint8_t MyDataCount = 0;
@@ -60,12 +61,7 @@ int main(void)
       switch(mainstate)
       {
         case MAIN_STATE_INIT:
-          if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START))
-          {
-          cylces++;
-          ClearEvent(EVENT_COM_SLOT_START);
-          }
-          if (cycles > 16*4) { //Should wait + Random(17) but dunno how
+          if (MyID == 1) {
               while(Com_IsInitialized() == 0){};
               if (Com_NetworkExists() == 1)
               {
