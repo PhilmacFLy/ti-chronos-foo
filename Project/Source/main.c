@@ -57,7 +57,11 @@ int main(void)
       switch(mainstate)
       {
         case MAIN_STATE_INIT:
+          if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START))
+          {
           cylces++;
+          ClearEvent(EVENT_COM_SLOT_START);
+          }
           if (cycles > 16*4) { //Should wait + Random(17) but dunno how
               while(Com_IsInitialized == 0){};
               if (Com_NetworkExists() == 1)
