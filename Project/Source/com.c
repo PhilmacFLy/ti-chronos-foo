@@ -8,15 +8,48 @@
 #include "event.h"
 #include "main.h"
 #include "timer.h"
+#include "data.h"
 #include "temperature.h"
 #include "com.h"
 
 uint8_t Com_States[64];
 uint8_t CurrentSlot;
+uint8_t DistanceToMaster = 0;
+uint8_t NumChildren = 0;
+uint8_t LastSentData = 0;
+uint8_t TxBuffer[64];
+uint8_t TxCount;
+
+uint8_t mainstate = MAIN_STATE_UNINIT;
+uint8_t master = 0;
+uint8_t cycles = 0;
+
+void Com_Handler(EventMaskType ev)
+{
+      switch(mainstate)
+      {
+        case MAIN_STATE_INIT:
+          Com_Handler_StartupListen(ev);
+          break;
+        case MAIN_STATE_INIT_MASTER:
+          //TODO Implement
+          mainstate = MAIN_STATE_COM;
+          break;
+          
+        case MAIN_STATE_INIT_CHILD:
+          //TODO Implement
+          mainstate = MAIN_STATE_COM;
+          break;
+          
+        case MAIN_STATE_COM:
+          Com_Handler_Mainstate(ev);
+          break;
+      }
+}
 
 // not yet finished
 // handles all communication specific stuff
-void Com_Handler(EventMaskType ev)
+void Com_Handler_Mainstate(EventMaskType ev)
 {
   // next cycle, so dispatch this here
   if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START)) CurrentSlot = (CurrentSlot + 1) % 64;
@@ -31,8 +64,40 @@ void Com_Handler(EventMaskType ev)
     
     if (currentcomstate == COM_MODE_TX)
     {
-      // TODO: Prepare TX Data for Send and give it to driver
-      // TODO: or increment timeout counter
+      // Prepare TX Data for Send and give it to driver
+      uint8_t i = 0;
+      uint8_t TxCount = 3;
+      TxBuffer[0] = MyID;
+      TxBuffer[1] = DistanceToMaster;
+      TxBuffer[2] = NumChildren;
+      for (i = 0; i < 16; i++) // max 16 values
+      {
+        uint8_t idx = LastSentData + i;
+        if ( ((Com_States[idx] & NEWDATABIT_MASK) == NEWDATABIT_MASK)
+          || ((Com_States[idx] & TIMEOUT_MASK) == TIMEOUT_MASK) )
+        {
+          uint16_t val = Data_GetValue(LastSentData + i);
+          uint8_t cnt = Data_GetCount(LastSentData + i);
+          // mask a little bit to need not so much bytes
+          if (val != INVALID_VALUE)
+          {
+            TxBuffer[TxCount++] = (idx << 2) | ((uint8_t) (val >> 8));
+            TxBuffer[TxCount++] = (uint8_t) (0xFF & val);
+            TxBuffer[TxCount++] = cnt;
+            // clear newdatabit mask and timeout counter
+            Com_States[idx] = Com_States[idx] & COM_MODE_MASK;
+          }
+        }
+        else
+        {
+          // increment timeout counter
+          // yeah, probably improvable...
+          Com_States[idx] = (Com_States[idx] & ~(TIMEOUT_MASK)) | ((Com_States[idx] + 1) & TIMEOUT_MASK);
+          // TODO: implement timeout functionality for this
+        }
+      }
+      LastSentData = (LastSentData + 16) % 64;
+      // TODO prepare transmission in trcv driver
     }
   }
   
@@ -73,6 +138,29 @@ void Com_Handler(EventMaskType ev)
   }
 }
 
+// not yet finished
+void Com_Handler_StartupListen(EventMaskType ev)
+{
+  if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START))
+  {
+    ClearEvent(EVENT_COM_SLOT_START);
+    cycles++;
+  }
+  if (cycles > 16*4)
+  { //Should wait + Random(17) but dunno how
+    if (Com_NetworkExists() == 1)
+    {
+      master = 0;
+      mainstate = MAIN_STATE_INIT_CHILD;
+    }
+    else
+    {
+      master = 1;
+      mainstate = MAIN_STATE_INIT_MASTER;
+    }
+  }
+}
+
 // only for own temperature because of main does this job
 void Com_FlagDataForSend(uint8_t index)
 {
@@ -85,21 +173,26 @@ uint8_t Com_NetworkExists()
   return 0;
 }
 
-uint8_t Com_IsInitialized()
-{
-  // TODO: Implement
-  return 0;
-}
-
 void Com_Init()
 {
   uint8_t i;
   for(i = 0; i < 64; i++) Com_States[i] = 0;
   Com_States[MyID] |= COM_MODE_TX;
+  mainstate = MAIN_STATE_INIT;
 }
 
 void Com_Start(uint8_t slot)
 {
   CurrentSlot = slot;
   // start timer?
+}
+
+void Com_RxIndication()
+{
+
+}
+
+void Com_TxConfirmation()
+{
+
 }

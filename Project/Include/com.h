@@ -7,7 +7,7 @@
 #ifndef __COM_H__
 # define __COM_H__
 
-#include "event.h"
+# include "event.h"
 
 /*
   8 Bit:
@@ -23,7 +23,7 @@
 
 # define COM_MODE_MASK        (0x70u)
 
-# define COM_MODE_IGNORE        (0x10u) // this slot has no matter for me
+# define COM_MODE_IGNORE        (0x10u) // this slot has no matter for me (currently)
 # define COM_MODE_TX            (0x20u) // i am sending in this slot
 # define COM_MODE_PARENT_RX     (0x30u) // my parent is sending in this slot
 # define COM_MODE_CHILD_RX      (0x40u) // one of my childs is sending in this slot
@@ -35,9 +35,14 @@
 # define NEWDATABIT_MASK        (0x80u) // this bit is used to indicate the next-to-send stuff
 
 void Com_Handler(EventMaskType ev);
+void Com_Handler_Mainstate(EventMaskType ev);
+void Com_Handler_StartupListen(EventMaskType ev);
 void Com_Init();
 void Com_FlagDataForSend(uint8_t index);
-uint8_t Com_IsInitialized();
 uint8_t Com_NetworkExists();
+
+void Com_RxIndication();
+
+void Com_TxConfirmation();
 
 #endif /* __COM_H__ */

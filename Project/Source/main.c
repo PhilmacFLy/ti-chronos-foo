@@ -20,8 +20,6 @@
 uint8_t MyID = 0xFF;
 uint8_t mainstate = MAIN_STATE_UNINIT;
 uint8_t master = 0;
-uint8_t cycles;
-uint8_t cyclelimit;
 
 uint8_t temperaturecounter = 0;
 uint8_t MyDataCount = 0;
@@ -40,7 +38,6 @@ int main(void)
   Data_Init();
   Com_Init();
   Scheduler_Init();   // enables interrupts, so should be last one
-  mainstate = MAIN_STATE_INIT;
   
   Timer_Start(0); // start the timer to get a halfway proper timebase
   

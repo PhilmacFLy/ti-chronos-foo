@@ -32,6 +32,12 @@ uint16_t Data_GetValue(uint8_t index)
   return data[index];
 }
 
+uint8_t Data_GetCount(uint8_t index)
+{
+  if (index >= 64) return 0;
+  return datacount[index];
+}
+
 // initializes data array
 void Data_Init()
 {
