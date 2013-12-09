@@ -97,6 +97,7 @@ void Com_Handler_Mainstate(EventMaskType ev)
         }
       }
       LastSentData = (LastSentData + 16) % 64;
+      // TODO prepare transmission in trcv driver
     }
   }
   
@@ -137,26 +138,27 @@ void Com_Handler_Mainstate(EventMaskType ev)
   }
 }
 
+// not yet finished
 void Com_Handler_StartupListen(EventMaskType ev)
 {
-          if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START))
-          {
-          cycles++;
-          ClearEvent(EVENT_COM_SLOT_START);
-          }
-          if (cycles > 16*4) { //Should wait + Random(17) but dunno how
-              while(Com_IsInitialized() == 0){};
-              if (Com_NetworkExists() == 1)
-              {
-                master = 0;
-                mainstate = MAIN_STATE_INIT_CHILD;
-              }
-              else
-              {
-                master = 1;
-                mainstate = MAIN_STATE_INIT_MASTER;
-              }
-          }
+  if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START))
+  {
+    ClearEvent(EVENT_COM_SLOT_START);
+    cycles++;
+  }
+  if (cycles > 16*4)
+  { //Should wait + Random(17) but dunno how
+    if (Com_NetworkExists() == 1)
+    {
+      master = 0;
+      mainstate = MAIN_STATE_INIT_CHILD;
+    }
+    else
+    {
+      master = 1;
+      mainstate = MAIN_STATE_INIT_MASTER;
+    }
+  }
 }
 
 // only for own temperature because of main does this job
@@ -168,12 +170,6 @@ void Com_FlagDataForSend(uint8_t index)
 uint8_t Com_NetworkExists()
 {
   // TODO: Implement;
-  return 0;
-}
-
-uint8_t Com_IsInitialized()
-{
-  // TODO: Implement
   return 0;
 }
 
@@ -189,4 +185,14 @@ void Com_Start(uint8_t slot)
 {
   CurrentSlot = slot;
   // start timer?
+}
+
+void Com_RxIndication()
+{
+
+}
+
+void Com_TxConfirmation()
+{
+
 }
