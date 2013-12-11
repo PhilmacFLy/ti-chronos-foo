@@ -326,7 +326,7 @@
         <option>
           <name>newCCIncludePaths</name>
           <state>$PROJ_DIR$\Include</state>
-          <state>$PROJ_DIR$\TIDrivers</state>
+          <state>$PROJ_DIR$\TI_RadioDriver</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1335,7 +1335,7 @@
         <option>
           <name>newCCIncludePaths</name>
           <state>$PROJ_DIR$\Include</state>
-          <state>$PROJ_DIR$\TIDrivers</state>
+          <state>$PROJ_DIR$\TI_RadioDriver</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -2039,7 +2039,16 @@
     <name>$PROJ_DIR$\Source\flash.c</name>
   </file>
   <file>
+    <name>$PROJ_DIR$\TI_RadioDriver\hal_pmm.c</name>
+  </file>
+  <file>
     <name>$PROJ_DIR$\Source\main.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\TI_RadioDriver\RF1A.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\TI_RadioDriver\RfRegSettings.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$\Source\scheduler.c</name>
@@ -2049,6 +2058,9 @@
   </file>
   <file>
     <name>$PROJ_DIR$\Source\timer.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\Source\transceiver.c</name>
   </file>
 </project>
 
