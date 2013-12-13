@@ -49,6 +49,7 @@ void Display_ShowStringSync()
   DSP_SHOW_BOTTOMLINE_CHAR(5, SPACE);
   
   displaystate = DSP_STATE_SYNC;
+  DSP_ACTIVATE();
 }
 
 void Display_ShowSetID(uint8_t index)
@@ -69,12 +70,14 @@ void Display_ShowSetID(uint8_t index)
   DSP_SHOW_BOTTOMLINE_CHAR(5, D);
   
   displaystate = DSP_STATE_SETID;
+  DSP_ACTIVATE();
 }
 
 void Display_SetShowTemperature()
 {
   Display_ShowTemperature(Data_GetValue(currentshownvalue), currentshownvalue);
   displaystate = DSP_STATE_SINGLE_TEMP;
+  DSP_ACTIVATE();
 }
 
 // todo: replace some defines

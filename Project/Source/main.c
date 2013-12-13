@@ -55,8 +55,26 @@ uint8_t MyID = 0xFF;
 uint8_t temperaturecounter = 0;
 uint8_t MyDataCount = 0;
 
-
-
+// as function so the variables will be destroyed after
+void InitID()
+{
+  volatile uint8_t OKpressed = 0;
+  EventMaskType ev;
+  
+  Flash_Read(&MyID, 1);
+  Display_ShowSetID(MyID);
+  
+  while(OKpressed == 0)
+  {
+    EnterSleep(); // wait for a timed event, exact timing not really necessary here
+    ev = GetAllEvents();
+    ClearEvent(~0); // to clear all events at once, however not perfect code :/
+    if (EVENT_BUTTON_NUM == (ev & EVENT_BUTTON_NUM)) OKpressed = 1; // dispatch here
+    if (EVENT_DISPLAY_TICK == (ev & EVENT_DISPLAY_TICK)) Display_Handler(ev);
+  }
+  
+  Flash_Write(&MyID, 1);
+}
 
 int main(void)
 {
@@ -76,7 +94,7 @@ int main(void)
   
   Timer_Start(0); // start the timer to get a halfway proper timebase
   
-  // TODO: implement asking for ID
+  InitID(); // asking for ID
   
 // -----------TRANSMIT TEST CODE ---------------
 //

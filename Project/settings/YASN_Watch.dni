@@ -20,7 +20,7 @@ NextState1=0
 Break=0
 State Storage=0
 [DebugChecksum]
-Checksum=-931157997
+Checksum=1615705174
 [CallStack]
 ShowArgs=0
 [Disassembly]
@@ -47,9 +47,10 @@ GraphEnabled=0
 ShowTimeLog=1
 ShowTimeSum=1
 [Breakpoints2]
-Bp0=_ 1 "STD_CODE2" "{$PROJ_DIR$\Source\timer.c}.25.3" 0 0 1 "" 0 ""
-Bp1=_ 1 "STD_CODE2" "{$PROJ_DIR$\Source\timer.c}.51.3" 0 0 1 "" 0 ""
-Count=2
+Bp0=_ 0 "STD_CODE2" "{$PROJ_DIR$\Source\timer.c}.25.3" 0 0 1 "" 0 ""
+Bp1=_ 1 "STD_CODE2" "{$PROJ_DIR$\Source\timer.c}.144.3" 0 0 1 "" 0 ""
+Bp2=_ 1 "STD_CODE2" "{$PROJ_DIR$\Source\timer.c}.172.20" 0 0 1 "" 0 ""
+Count=3
 [Interrupts]
 Enabled=1
 [MemoryMap]
@@ -70,9 +71,8 @@ Category=_ 0
 LoggingEnabled=_ 0
 LogFile=_ ""
 [Breakpoints]
-Bp0=_ "STD_CODE" "{$PROJ_DIR$\Source\button.c}.52.20" 1 0 0 0 "" 0 ""
-Bp1=_ "STD_CODE" "{$PROJ_DIR$\Source\temperature.c}.63.20" 0 0 0 0 "" 0 ""
-Count=2
+Bp0=_ "STD_CODE" "{$PROJ_DIR$\Source\temperature.c}.63.20" 0 0 0 0 "" 0 ""
+Count=1
 [FET]
 Clock mode=14
 Extended Clock mode=-1

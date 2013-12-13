@@ -10,6 +10,7 @@
 #include "timer.h"
 #include "data.h"
 #include "temperature.h"
+#include "transceiver.h"
 #include "com.h"
 
 uint8_t Com_States[64];
@@ -91,11 +92,11 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
           // increment timeout counter
           // yeah, probably improvable...
           Com_States[idx] = (Com_States[idx] & ~(TIMEOUT_MASK)) | ((Com_States[idx] + 1) & TIMEOUT_MASK);
-          // TODO: implement timeout functionality for this
+          // TODO: implement timeout functionality for this???
         }
       }
       LastSentData = (LastSentData + 16) % 64;
-      // TODO prepare transmission in trcv driver
+      PrepareTransmit(TxBuffer, TxCount);
     }
   }
   
