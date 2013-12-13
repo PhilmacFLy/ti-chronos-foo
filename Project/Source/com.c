@@ -69,33 +69,36 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
       TxBuffer[0] = MyID;
       TxBuffer[1] = DistanceToMaster;
       TxBuffer[2] = NumChildren;
-      for (i = 0; i < 16; i++) // max 16 values
+      if (MyID == 0) // master doesn't sends data out currently
       {
-        uint8_t idx = LastSentData + i;
-        if ( ((Com_States[idx] & NEWDATABIT_MASK) == NEWDATABIT_MASK)
-          || ((Com_States[idx] & TIMEOUT_MASK) == TIMEOUT_MASK) )
+        for (i = 0; i < 16; i++) // max 16 values
         {
-          uint16_t val = Data_GetValue(LastSentData + i);
-          uint8_t cnt = Data_GetCount(LastSentData + i);
-          // mask a little bit to need not so much bytes
-          if (val != INVALID_VALUE)
+          uint8_t idx = LastSentData + i;
+          if ( ((Com_States[idx] & NEWDATABIT_MASK) == NEWDATABIT_MASK)
+            || ((Com_States[idx] & TIMEOUT_MASK) == TIMEOUT_MASK) )
           {
-            TxBuffer[TxCount++] = (idx << 2) | ((uint8_t) (val >> 8));
-            TxBuffer[TxCount++] = (uint8_t) (0xFF & val);
-            TxBuffer[TxCount++] = cnt;
-            // clear newdatabit mask and timeout counter
-            Com_States[idx] = Com_States[idx] & COM_MODE_MASK;
+            uint16_t val = Data_GetValue(LastSentData + i);
+            uint8_t cnt = Data_GetCount(LastSentData + i);
+            // mask a little bit to need not so much bytes
+            if (val != INVALID_VALUE)
+            {
+              TxBuffer[TxCount++] = (idx << 2) | ((uint8_t) (val >> 8));
+              TxBuffer[TxCount++] = (uint8_t) (0xFF & val);
+              TxBuffer[TxCount++] = cnt;
+              // clear newdatabit mask and timeout counter
+              Com_States[idx] = Com_States[idx] & COM_MODE_MASK;
+            }
+          }
+          else
+          {
+            // increment timeout counter
+            // yeah, probably improvable...
+            Com_States[idx] = (Com_States[idx] & ~(TIMEOUT_MASK)) | ((Com_States[idx] + 1) & TIMEOUT_MASK);
+            // TODO: implement timeout functionality for this???
           }
         }
-        else
-        {
-          // increment timeout counter
-          // yeah, probably improvable...
-          Com_States[idx] = (Com_States[idx] & ~(TIMEOUT_MASK)) | ((Com_States[idx] + 1) & TIMEOUT_MASK);
-          // TODO: implement timeout functionality for this???
-        }
+        LastSentData = (LastSentData + 16) % 64;
       }
-      LastSentData = (LastSentData + 16) % 64;
       PrepareTransmit(TxBuffer, TxCount);
     }
   }
@@ -113,8 +116,12 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
       {
         // TODO: Resynchronisation, because parent sent us data
       }
-      // TODO: read data and sort in
-      // else TODO: dispatch RX timeout event (timer returns normally)
+      else
+      {
+        // TODO: read data and sort in
+      }
+      // else TODO: dispatch RX timeout event (timer returns normally,
+      //                                     no event set by transceiver)
     }
   }
     
