@@ -122,7 +122,15 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
         if (currentcomstate == COM_MODE_PARENT_RX)
         {
           // formula datalen -> transmission time
+          // 4 Byte preamble, 2 Byte additional data
+          // Anzahl Bits = ((x + 4) * 8)
+          // Übertragungszeit in s = ((x + 4) * 8) / 38383 s
+          // 1 microtick ~ 8 us
+          // Übertragungszeit in microticks = ((x + 4) * 8) * 250000 / 38383
+          // (x + 4) * 2000000 / 38383 ~ (x + 4) * 52106 / 1000
           uint8_t len = ReadRxData((uint8_t*)0); // no data necessary ATM
+          uint16_t resyncoffset = ((len + 4) * 52106) / 1000;
+          Timer_CorrectSync(MICROTICK_TX_START + 0x18 + resyncoffset); // TODO: recalculate 0x18 (code execution time)
           //Timer_CorrectSync(MICROTICK_TX_START + 0x05);
           // TODO: Recalculate resync position
           ReceiveOff(); // turn off TRCV
@@ -130,7 +138,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
         else
         {
           uint8_t len = ReadRxData(RxBuffer);
-          uint8_t numdata = (len-4) / 3; // 3 for control information + 1 for CRC control bit
+          uint8_t numdata = (len-5) / 3; // 3 for control information + 1 for CRC control bit + 1 for RSSI
           
           ReceiveOff(); // turn off TRCV
           if ((RxBuffer[len - 1] & CRC_OK) == CRC_OK) // CRC OK?
