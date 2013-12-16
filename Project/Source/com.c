@@ -121,16 +121,18 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
       {
         if (currentcomstate == COM_MODE_PARENT_RX)
         {
-          //Timer_CorrectSync(MICROTICK_TX_START);
-          // TODO: Resynchronisation, because parent sent us data
-          ReceiveOff();
+          // formula datalen -> transmission time
+          uint8_t len = ReadRxData((uint8_t*)0); // no data necessary ATM
+          //Timer_CorrectSync(MICROTICK_TX_START + 0x05);
+          // TODO: Recalculate resync position
+          ReceiveOff(); // turn off TRCV
         }
         else
         {
           uint8_t len = ReadRxData(RxBuffer);
           uint8_t numdata = (len-4) / 3; // 3 for control information + 1 for CRC control bit
           
-          ReceiveOff();
+          ReceiveOff(); // turn off TRCV
           if ((RxBuffer[len - 1] & CRC_OK) == CRC_OK) // CRC OK?
           {
             // read data and sort in
@@ -152,7 +154,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
       else
       {
         // TODO: Timeout of message?
-        ReceiveOff();
+        ReceiveOff(); // turn off TRCV
       }
     }
   }

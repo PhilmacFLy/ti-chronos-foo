@@ -109,7 +109,7 @@ void ReceiveOff(void)
 uint8_t ReadRxData(uint8_t* buffer)
 {   
   uint8_t length = ReadSingleReg(RXBYTES);               
-  ReadBurstReg(RF_RXFIFORD, buffer, length);
+  if (buffer != (uint8_t*)0) ReadBurstReg(RF_RXFIFORD, buffer, length);
   return length;
 }
 
