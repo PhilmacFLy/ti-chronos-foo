@@ -128,13 +128,12 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
           uint8_t len = ReadRxData((uint8_t*)0); // no data necessary ATM
           uint16_t resyncoffset = ((len + 4) * 52106) / 1000;
           Timer_CorrectSync(MICROTICK_TX_START + 0x18 + resyncoffset); // TODO: recalculate 0x18 (code execution time)
-          // TODO: Recalculate resync position
           ReceiveOff(); // turn off TRCV
         }
         else
         {
           uint8_t len = ReadRxData(RxBuffer);
-          uint8_t numdata = (len-5) / 3; // 3 for control information + 1 for CRC control bit + 1 for RSSI
+          uint8_t numdata = (len - 5) / 3; // 3 for control information + 1 for CRC control bit + 1 for RSSI
           
           ReceiveOff(); // turn off TRCV
           if ((RxBuffer[len - 1] & CRC_OK) == CRC_OK) // CRC OK?

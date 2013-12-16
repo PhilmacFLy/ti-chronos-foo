@@ -19,21 +19,21 @@
 #include "com.h"
 #include "transceiver.h"
 
-#define  PACKET_LEN         (0x05)	    // PACKET_LEN <= 61
-#define  RSSI_IDX           (PACKET_LEN+1)  // Index of appended RSSI 
-#define  CRC_LQI_IDX        (PACKET_LEN+2)  // Index of appended LQI, checksum
+//#define  PACKET_LEN         (0x05)	    // PACKET_LEN <= 61
+//#define  RSSI_IDX           (PACKET_LEN+1)  // Index of appended RSSI 
+//#define  CRC_LQI_IDX        (PACKET_LEN+2)  // Index of appended LQI, checksum
 #define  PATABLE_VAL        (0x51)          // 0 dBm output 
 
 extern RF_SETTINGS rfSettings;
 
-unsigned char packetReceived;
-unsigned char packetTransmit; 
+//unsigned char packetReceived;
+//unsigned char packetTransmit; 
 
 //unsigned char RxBuffer[64];
 //unsigned char RxBufferLength = 0;
 //const unsigned char TxBuffer[6]= {PACKET_LEN, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE};
-unsigned char buttonPressed = 0;
-unsigned int i = 0; 
+//unsigned char buttonPressed = 0;
+//unsigned int i = 0; 
 
 uint8_t trcv_state;
 
@@ -60,7 +60,6 @@ void Radio_Init( void )
 
 void PrepareTransmit(unsigned char *buffer, unsigned char length)
 {
-  ReceiveOff(); // just in case
   RF1AIES |= BIT9;                          
   RF1AIFG &= ~BIT9;                         // Clear pending interrupts
   RF1AIE |= BIT9;                           // Enable TX end-of-packet interrupt
