@@ -25,11 +25,24 @@ uint8_t TxCount;
 
 uint8_t RxBuffer[64];
 
-uint8_t mainstate = MAIN_STATE_UNINIT;
+uint8_t mainstate = MAIN_STATE_INIT;
 uint8_t cycles = 0;
 
 void Com_Handler(EventMaskType ev)
 {
+  /*
+  const ComHandlerFktPtrType ComHandlerFktTable[4] = {
+    Com_Handler_StartupListen,
+    Com_Handler_StartupMaster,
+    Com_Handler_StartupChild,
+    Com_Handler_NormalCommunication
+  };
+  ComHandlerFktPtrType ComHandlerFktPtr = ComHandlerFktTable[mainstate];
+  if (ComHandlerFktPtr != (ComHandlerFktPtrType)0)
+  {
+    ComHandlerFktPtr(ev);
+  }
+  */
   switch(mainstate)
   {
     case MAIN_STATE_INIT:
@@ -201,8 +214,16 @@ void Com_Handler_StartupListen(EventMaskType ev)
 
 void Com_Handler_StartupMaster(EventMaskType ev)
 {
-  //TODO Implement
-  mainstate = MAIN_STATE_COM;
+  if ((EVENT_COM_SLOT_START & ev) == EVENT_COM_SLOT_START)
+  {
+    ClearEvent(EVENT_COM_SLOT_START);
+    CurrentSlot = 0;
+    Com_States[MyID] = COM_MODE_TX;
+    Timer_Stop();
+    Timer_Start(0); // startpoint not relevant because master
+    Timer_SetMode(COM_MODE_TX);
+    mainstate = MAIN_STATE_COM;
+  }
 }
 
 void Com_Handler_StartupChild(EventMaskType ev)
