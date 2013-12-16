@@ -31,6 +31,7 @@ uint8_t cycles = 0;
 void Com_Handler(EventMaskType ev)
 {
   /*
+  typedef void (*ComHandlerFktType)(EventMaskType)
   const ComHandlerFktPtrType ComHandlerFktTable[4] = {
     Com_Handler_StartupListen,
     Com_Handler_StartupMaster,
