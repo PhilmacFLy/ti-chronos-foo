@@ -8,7 +8,15 @@
 #include "scheduler.h"
 #include "event.h"
 
+#ifdef OPTIMIZE_EVENTS
+
+volatile EventMaskType eventmemory = 0;
+
+#else
+
 static volatile EventMaskType eventmemory = 0;
+
+#endif /* OPTIMIZE_EVENTS */
 
 // gets all events which are set in "eventmask" and returns them
 EventMaskType GetEvent(EventMaskType eventmask)
@@ -36,6 +44,8 @@ void ClearEvent(EventMaskType eventmask)
   EnableInterrupts();
 }
 
+#ifndef OPTIMIZE_EVENTS
+
 // sets all events which are set in "eventmask"
 void SetEvent(EventMaskType eventmask)
 {
@@ -43,3 +53,6 @@ void SetEvent(EventMaskType eventmask)
   eventmemory |= eventmask;
   EnableInterrupts();
 }
+
+#endif /* OPTMIZE_EVENTS */
+

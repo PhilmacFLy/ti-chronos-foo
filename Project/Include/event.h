@@ -7,6 +7,8 @@
 #ifndef __EVENT_H__
 # define __EVENT_H__
 
+//# define OPTIMIZE_EVENTS
+
 typedef uint16_t EventMaskType;
 
 # define EVENT_NO_EVENT                 ((EventMaskType) 0x0000)
@@ -33,9 +35,21 @@ typedef uint16_t EventMaskType;
 // or is it even not necessary?
 //# define WaitEvent(eventmask) while((EventMaskType)0 == GetEvent(eventmask))
 
+# ifdef OPTIMIZE_EVENTS
+
+#define SetEvent(eventmask) EventMaskType tempvar = (eventmask); \
+                            eventmemory |= tempvar
+
+extern volatile EventMaskType eventmemory;
+
+# else
+
+void SetEvent(EventMaskType eventmask);
+
+# endif /* OPTIMIZE_EVENTS */
+
 EventMaskType GetEvent(EventMaskType eventmask);
 EventMaskType GetAllEvents();
 void ClearEvent(EventMaskType eventmask);
-void SetEvent(EventMaskType eventmask);
 
 #endif /* __EVENT_H__ */
