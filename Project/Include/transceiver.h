@@ -16,6 +16,7 @@ void PrepareTransmit(unsigned char *buffer, unsigned char length);
 void StartTransmit(void);
 void ReceiveOn(void);
 void ReceiveOff(void);
+uint8_t ReadRxData(uint8_t* buffer);
 
 void InitButtonLeds(void);
 void InitRadio(void);

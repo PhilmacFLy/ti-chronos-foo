@@ -35,8 +35,7 @@ unsigned char RxBufferLength = 0;
 unsigned char buttonPressed = 0;
 unsigned int i = 0; 
 
-unsigned char transmitting = 0; 
-unsigned char receiving = 0; 
+uint8_t trcv_state;
 
 void Radio_Init( void )
 {  
@@ -65,9 +64,7 @@ void InitRadio(void)
 
 void PrepareTransmit(unsigned char *buffer, unsigned char length)
 {
-  ReceiveOff();
-  receiving = 0; 
-  transmitting = 1;
+  ReceiveOff(); // just in case
   RF1AIES |= BIT9;                          
   RF1AIFG &= ~BIT9;                         // Clear pending interrupts
   RF1AIE |= BIT9;                           // Enable TX end-of-packet interrupt
@@ -77,7 +74,9 @@ void PrepareTransmit(unsigned char *buffer, unsigned char length)
 
 void StartTransmit(void)
 {
-  Strobe( RF_STX );                         // Strobe STX   
+  Strobe( RF_STX );                         // Strobe STX
+
+  trcv_state = TRCV_STATE_TX;  
 }
 
 
@@ -88,7 +87,9 @@ void ReceiveOn(void)
   RF1AIE  |= BIT9;                          // Enable the interrupt 
   
   // Radio is in IDLE following a TX, so strobe SRX to enter Receive Mode
-  Strobe( RF_SRX );                      
+  Strobe( RF_SRX );
+  
+  trcv_state = TRCV_STATE_RX;
 }
 
 void ReceiveOff(void)
@@ -100,7 +101,17 @@ void ReceiveOff(void)
   // Therefore, it is necessary to flush the RX FIFO after issuing IDLE strobe 
   // such that the RXFIFO is empty prior to receiving a packet.
   Strobe( RF_SIDLE );
-  Strobe( RF_SFRX  );                       
+  Strobe( RF_SFRX  );
+  
+  trcv_state = TRCV_STATE_OFF;
+}
+
+// returns length, writes data to uint8_t * data
+uint8_t ReadRxData(uint8_t* buffer)
+{   
+  uint8_t length = ReadSingleReg(RXBYTES);               
+  ReadBurstReg(RF_RXFIFORD, buffer, length);
+  return length;
 }
 
 #pragma vector=CC1101_VECTOR
@@ -119,7 +130,8 @@ __interrupt void CC1101_ISR(void)
     case 16: break;                         // RFIFG7
     case 18: break;                         // RFIFG8
     case 20:                                // RFIFG9
-      if(receiving)			    // RX end of packet
+      // needs some rework
+      if(trcv_state == TRCV_STATE_RX)			    // RX end of packet
       {
         // Read the length byte from the FIFO       
         RxBufferLength = ReadSingleReg( RXBYTES );               
@@ -132,11 +144,11 @@ __interrupt void CC1101_ISR(void)
         if(RxBuffer[CRC_LQI_IDX] & CRC_OK)  
           P1OUT ^= BIT0;                    // Toggle LED1      
       }
-      else if(transmitting)		    // TX end of packet
+      else if(trcv_state == TRCV_STATE_TX)		    // TX end of packet
       {
         RF1AIE &= ~BIT9;                    // Disable TX end-of-packet interrupt
-        P3OUT &= ~BIT6;                     // Turn off LED after Transmit               
-        transmitting = 0; 
+        P3OUT &= ~BIT6;                     // Turn off LED after Transmit 
+        trcv_state = TRCV_STATE_OFF; // call receive off?
       }
       else while(1); 			    // trap 
       break;
