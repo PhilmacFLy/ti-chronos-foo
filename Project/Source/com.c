@@ -75,7 +75,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
         {
           uint8_t idx = LastSentData + i;
           if ( ((Com_States[idx] & NEWDATABIT_MASK) == NEWDATABIT_MASK)
-            || ((Com_States[idx] & TIMEOUT_MASK) == TIMEOUT_MASK) )
+            || ((Com_States[idx] & TIMEOUT_MASK) == TIMEOUT_VALUE) )
           {
             uint16_t val = Data_GetValue(LastSentData + i);
             uint8_t cnt = Data_GetCount(LastSentData + i);
@@ -94,7 +94,6 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
             // increment timeout counter
             // yeah, probably improvable...
             Com_States[idx] = (Com_States[idx] & ~(TIMEOUT_MASK)) | ((Com_States[idx] + 1) & TIMEOUT_MASK);
-            // TODO: implement timeout functionality for this???
           }
         }
         LastSentData = (LastSentData + 16) % 64;
@@ -109,19 +108,28 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
     
     if (currentcomstate == COM_MODE_PARENT_RX || currentcomstate == COM_MODE_CHILD_RX)
     {
-      // TODO: Activate RX
-      Timer_Delay(20000); // TODO: recalculate! currently ~20 ms
-      // TODO: wait for RX event / timeout and disable RX mode
-      if (currentcomstate == COM_MODE_PARENT_RX)
+      EventMaskType trcvev;
+      ReceiveOn();
+      Timer_Delay(25000); // TODO: recalculate! currently ~25 ms
+      ReceiveOff();
+      trcvev = GetEvent(EVENT_TRCV_RX_EVENT);
+      ClearEvent(EVENT_TRCV_RX_EVENT);
+      if (trcvev == EVENT_TRCV_RX_EVENT)
       {
-        // TODO: Resynchronisation, because parent sent us data
+        if (currentcomstate == COM_MODE_PARENT_RX)
+        {
+          //Timer_CorrectSync(MICROTICK_TX_START);
+          // TODO: Resynchronisation, because parent sent us data
+        }
+        else
+        {
+          // TODO: read data and sort in
+        }
       }
       else
       {
-        // TODO: read data and sort in
+        // TODO: Timeout of message?
       }
-      // else TODO: dispatch RX timeout event (timer returns normally,
-      //                                     no event set by transceiver)
     }
   }
     
@@ -131,7 +139,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
     
     if (currentcomstate == COM_MODE_TX)
     {
-      // TODO: Activate Transmission
+      StartTransmit();
       // TODO: Wait for end of transmission? is this necessary?
     }
   }
@@ -140,7 +148,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
   {
     ClearEvent(EVENT_COM_SLOT_RX_TX_SYNC);
     
-    // MAKE SYNC STUFF
+    // TODO: MAKE SYNC STUFF for new nodes
   }
 }
 

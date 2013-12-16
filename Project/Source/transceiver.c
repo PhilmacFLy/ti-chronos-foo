@@ -46,30 +46,7 @@ void Radio_Init( void )
   ResetRadioCore();     
   InitRadio();
     
-  ReceiveOn(); 
-  receiving = 1; 
-    
-}
-
-void InitButtonLeds(void)
-{
-  // Set up the button as interruptible 
-  P1DIR &= ~BIT7;
-  P1REN |= BIT7;
-  P1IES &= BIT7;
-  P1IFG = 0;
-  P1OUT |= BIT7;
-  P1IE  |= BIT7; 
-
-  // Initialize Port J
-  PJOUT = 0x00;
-  PJDIR = 0xFF; 
-
-  // Set up LEDs 
-  P1OUT &= ~BIT0;
-  P1DIR |= BIT0;
-  P3OUT &= ~BIT6;
-  P3DIR |= BIT6;
+  ReceiveOff(); // default to OFF
 }
 
 void InitRadio(void)
@@ -85,6 +62,7 @@ void InitRadio(void)
   WriteSinglePATable(PATABLE_VAL);
 }
 
+
 void PrepareTransmit(unsigned char *buffer, unsigned char length)
 {
   ReceiveOff();
@@ -96,6 +74,7 @@ void PrepareTransmit(unsigned char *buffer, unsigned char length)
   
   WriteBurstReg(RF_TXFIFOWR, buffer, length);     
 }
+
 void StartTransmit(void)
 {
   Strobe( RF_STX );                         // Strobe STX   

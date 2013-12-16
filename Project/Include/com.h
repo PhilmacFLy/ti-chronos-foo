@@ -21,7 +21,7 @@
   0x80 : New Data Bit
 */
 
-# define COM_MODE_MASK        (0x70u)
+# define COM_MODE_MASK          (0x70u)
 
 # define COM_MODE_IGNORE        (0x10u) // this slot has no matter for me (currently)
 # define COM_MODE_TX            (0x20u) // i am sending in this slot
@@ -31,6 +31,7 @@
 # define COM_MODE_PARENT_RESYNC (0x60u) // used if synchronisation to parent is lost
 
 # define TIMEOUT_MASK           (0x0Fu)
+# define TIMEOUT_VALUE          (0x04u)
 
 # define NEWDATABIT_MASK        (0x80u) // this bit is used to indicate the next-to-send stuff
 

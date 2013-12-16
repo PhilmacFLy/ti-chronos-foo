@@ -15,7 +15,7 @@ typedef uint16_t EventMaskType;
 # define EVENT_COM_SLOT_RX_START        ((EventMaskType) 0x0002)
 # define EVENT_COM_SLOT_TX_START        ((EventMaskType) 0x0004)
 # define EVENT_COM_SLOT_RX_TX_SYNC      ((EventMaskType) 0x0008)
-# define EVENT_UNUSED0x0010             ((EventMaskType) 0x0010)
+# define EVENT_TRCV_RX_EVENT            ((EventMaskType) 0x0010)
 # define EVENT_UNUSED0x0020             ((EventMaskType) 0x0020)
 # define EVENT_UNUSED0x0040             ((EventMaskType) 0x0040)
 # define EVENT_UNUSED0x0080             ((EventMaskType) 0x0080)
