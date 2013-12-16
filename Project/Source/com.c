@@ -11,6 +11,7 @@
 #include "data.h"
 #include "temperature.h"
 #include "transceiver.h"
+#include "scheduler.h"
 #include "com.h"
 
 uint8_t Com_States[64];
@@ -18,8 +19,11 @@ uint8_t CurrentSlot;
 uint8_t DistanceToMaster = 0;
 uint8_t NumChildren = 0;
 uint8_t LastSentData = 0;
+
 uint8_t TxBuffer[64];
 uint8_t TxCount;
+
+uint8_t RxBuffer[64];
 
 uint8_t mainstate = MAIN_STATE_UNINIT;
 uint8_t cycles = 0;
@@ -72,7 +76,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
         {
           uint8_t idx = LastSentData + i;
           if ( ((Com_States[idx] & NEWDATABIT_MASK) == NEWDATABIT_MASK)
-            || ((Com_States[idx] & TIMEOUT_MASK) == TIMEOUT_MASK) )
+            || ((Com_States[idx] & TIMEOUT_MASK) == TIMEOUT_VALUE) )
           {
             uint16_t val = Data_GetValue(LastSentData + i);
             uint8_t cnt = Data_GetCount(LastSentData + i);
@@ -91,7 +95,6 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
             // increment timeout counter
             // yeah, probably improvable...
             Com_States[idx] = (Com_States[idx] & ~(TIMEOUT_MASK)) | ((Com_States[idx] + 1) & TIMEOUT_MASK);
-            // TODO: implement timeout functionality for this???
           }
         }
         LastSentData = (LastSentData + 16) % 64;
@@ -106,19 +109,50 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
     
     if (currentcomstate == COM_MODE_PARENT_RX || currentcomstate == COM_MODE_CHILD_RX)
     {
-      // TODO: Activate RX
-      Timer_Delay(20000); // TODO: recalculate! currently ~20 ms
-      // TODO: wait for RX event / timeout and disable RX mode
-      if (currentcomstate == COM_MODE_PARENT_RX)
+      EventMaskType trcvev;
+      ReceiveOn();
+      Timer_Delay(25000); // TODO: recalculate! currently ~25 ms
+      trcvev = GetEvent(EVENT_TRCV_RX_EVENT);
+      ClearEvent(EVENT_TRCV_RX_EVENT);
+      if (trcvev == EVENT_TRCV_RX_EVENT)
       {
-        // TODO: Resynchronisation, because parent sent us data
+        if (currentcomstate == COM_MODE_PARENT_RX)
+        {
+          // formula datalen -> transmission time
+          uint8_t len = ReadRxData((uint8_t*)0); // no data necessary ATM
+          //Timer_CorrectSync(MICROTICK_TX_START + 0x05);
+          // TODO: Recalculate resync position
+          ReceiveOff(); // turn off TRCV
+        }
+        else
+        {
+          uint8_t len = ReadRxData(RxBuffer);
+          uint8_t numdata = (len-4) / 3; // 3 for control information + 1 for CRC control bit
+          
+          ReceiveOff(); // turn off TRCV
+          if ((RxBuffer[len - 1] & CRC_OK) == CRC_OK) // CRC OK?
+          {
+            // read data and sort in
+            uint8_t i; uint8_t idx; uint16_t val; uint8_t cnt;
+            
+            for (i = 0; i < numdata; i++)
+            {
+              // unzip data
+              idx = (RxBuffer[i * 3 + 3] >> 2);
+              val = ((uint16_t) RxBuffer[i * 3 + 3]) << 8;
+              val += ((uint16_t) RxBuffer[i * 3 + 4]);
+              cnt = RxBuffer[i * 3 + 5];
+              Data_SetValue(idx, val, cnt);       // save this value
+              Com_States[idx] |= NEWDATABIT_MASK; // mark as new data, to send it
+            }
+          }
+        }
       }
       else
       {
-        // TODO: read data and sort in
+        // TODO: Timeout of message?
+        ReceiveOff(); // turn off TRCV
       }
-      // else TODO: dispatch RX timeout event (timer returns normally,
-      //                                     no event set by transceiver)
     }
   }
     
@@ -128,8 +162,9 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
     
     if (currentcomstate == COM_MODE_TX)
     {
-      // TODO: Activate Transmission
-      // TODO: Wait for end of transmission? is this necessary?
+      StartTransmit();
+      EnterSleep(); // Tx interrupt will wake up, event is not really necessary for this job
+      ReceiveOff();
     }
   }
     
@@ -137,7 +172,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
   {
     ClearEvent(EVENT_COM_SLOT_RX_TX_SYNC);
     
-    // MAKE SYNC STUFF
+    // TODO: MAKE SYNC STUFF for new nodes
   }
 }
 
