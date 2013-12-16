@@ -1,0 +1,19 @@
+ ____________________
+|                    |
+| Packetbeschreibung |
+|____________________|
+
+Byte:	 00	 01	 02	 03 - 51
+	|ID	|Dist	|ChCnt	|Data
+
+ID:
+Knoten ID des Senders
+
+Dist:
+Distanz in Hops zum Master vom Sendeknoten
+
+ChCnt:
+Anzahl der Kinder des Sendeknoten
+
+Data:
+Datenbytes
