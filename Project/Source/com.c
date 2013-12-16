@@ -39,7 +39,7 @@ void Com_Handler(EventMaskType ev)
       Com_Handler_StartupMaster(ev);
       break;       
     case MAIN_STATE_INIT_CHILD:
-
+      Com_Handler_StartupChild(ev);
       break; 
     case MAIN_STATE_COM:
       Com_Handler_NormalCommunication(ev);
