@@ -21,7 +21,6 @@
 #define  PACKET_LEN         (0x05)	    // PACKET_LEN <= 61
 #define  RSSI_IDX           (PACKET_LEN+1)  // Index of appended RSSI 
 #define  CRC_LQI_IDX        (PACKET_LEN+2)  // Index of appended LQI, checksum
-#define  CRC_OK             (BIT7)          // CRC_OK bit 
 #define  PATABLE_VAL        (0x51)          // 0 dBm output 
 
 extern RF_SETTINGS rfSettings;
@@ -29,8 +28,8 @@ extern RF_SETTINGS rfSettings;
 unsigned char packetReceived;
 unsigned char packetTransmit; 
 
-unsigned char RxBuffer[64];
-unsigned char RxBufferLength = 0;
+//unsigned char RxBuffer[64];
+//unsigned char RxBufferLength = 0;
 //const unsigned char TxBuffer[6]= {PACKET_LEN, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE};
 unsigned char buttonPressed = 0;
 unsigned int i = 0; 
@@ -134,15 +133,15 @@ __interrupt void CC1101_ISR(void)
       if(trcv_state == TRCV_STATE_RX)			    // RX end of packet
       {
         // Read the length byte from the FIFO       
-        RxBufferLength = ReadSingleReg( RXBYTES );               
-        ReadBurstReg(RF_RXFIFORD, RxBuffer, RxBufferLength); 
+        //RxBufferLength = ReadSingleReg( RXBYTES );               
+        //ReadBurstReg(RF_RXFIFORD, RxBuffer, RxBufferLength); 
         
         // Stop here to see contents of RxBuffer
         __no_operation(); 		   
         
         // Check the CRC results
-        if(RxBuffer[CRC_LQI_IDX] & CRC_OK)  
-          P1OUT ^= BIT0;                    // Toggle LED1      
+        //if(RxBuffer[CRC_LQI_IDX] & CRC_OK)  
+          //P1OUT ^= BIT0;                    // Toggle LED1      
       }
       else if(trcv_state == TRCV_STATE_TX)		    // TX end of packet
       {

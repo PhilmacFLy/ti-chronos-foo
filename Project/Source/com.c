@@ -11,6 +11,7 @@
 #include "data.h"
 #include "temperature.h"
 #include "transceiver.h"
+#include "scheduler.h"
 #include "com.h"
 
 uint8_t Com_States[64];
@@ -18,8 +19,11 @@ uint8_t CurrentSlot;
 uint8_t DistanceToMaster = 0;
 uint8_t NumChildren = 0;
 uint8_t LastSentData = 0;
+
 uint8_t TxBuffer[64];
 uint8_t TxCount;
+
+uint8_t RxBuffer[64];
 
 uint8_t mainstate = MAIN_STATE_UNINIT;
 uint8_t master = 0;
@@ -111,7 +115,6 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
       EventMaskType trcvev;
       ReceiveOn();
       Timer_Delay(25000); // TODO: recalculate! currently ~25 ms
-      ReceiveOff();
       trcvev = GetEvent(EVENT_TRCV_RX_EVENT);
       ClearEvent(EVENT_TRCV_RX_EVENT);
       if (trcvev == EVENT_TRCV_RX_EVENT)
@@ -120,15 +123,36 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
         {
           //Timer_CorrectSync(MICROTICK_TX_START);
           // TODO: Resynchronisation, because parent sent us data
+          ReceiveOff();
         }
         else
         {
-          // TODO: read data and sort in
+          uint8_t len = ReadRxData(RxBuffer);
+          uint8_t numdata = (len-4) / 3; // 3 for control information + 1 for CRC control bit
+          
+          ReceiveOff();
+          if ((RxBuffer[len - 1] & CRC_OK) == CRC_OK) // CRC OK?
+          {
+            // read data and sort in
+            uint8_t i; uint8_t idx; uint16_t val; uint8_t cnt;
+            
+            for (i = 0; i < numdata; i++)
+            {
+              // unzip data
+              idx = (RxBuffer[i * 3 + 3] >> 2);
+              val = ((uint16_t) RxBuffer[i * 3 + 3]) << 8;
+              val += ((uint16_t) RxBuffer[i * 3 + 4]);
+              cnt = RxBuffer[i * 3 + 5];
+              Data_SetValue(idx, val, cnt);       // save this value
+              Com_States[idx] |= NEWDATABIT_MASK; // mark as new data, to send it
+            }
+          }
         }
       }
       else
       {
         // TODO: Timeout of message?
+        ReceiveOff();
       }
     }
   }
@@ -140,7 +164,8 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
     if (currentcomstate == COM_MODE_TX)
     {
       StartTransmit();
-      // TODO: Wait for end of transmission? is this necessary?
+      EnterSleep(); // Tx interrupt will wake up, event is not really necessary for this job
+      ReceiveOff();
     }
   }
     
