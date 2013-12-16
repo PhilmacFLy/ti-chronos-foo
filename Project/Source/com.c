@@ -1,4 +1,4 @@
-
+﻿
 /*
   Filename: com.c
   Description: This file contains basically the communication related code.
