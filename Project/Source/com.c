@@ -22,7 +22,6 @@ uint8_t TxBuffer[64];
 uint8_t TxCount;
 
 uint8_t mainstate = MAIN_STATE_UNINIT;
-uint8_t master = 0;
 uint8_t cycles = 0;
 
 void Com_Handler(EventMaskType ev)
@@ -33,12 +32,10 @@ void Com_Handler(EventMaskType ev)
       Com_Handler_StartupListen(ev);
       break;
     case MAIN_STATE_INIT_MASTER:
-      //TODO Implement
-      mainstate = MAIN_STATE_COM;
+      Com_Handler_StartupMaster(ev);
       break;       
     case MAIN_STATE_INIT_CHILD:
-      //TODO Implement
-      mainstate = MAIN_STATE_COM;
+
       break; 
     case MAIN_STATE_COM:
       Com_Handler_NormalCommunication(ev);
@@ -144,7 +141,6 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
   }
 }
 
-// not yet finished
 void Com_Handler_StartupListen(EventMaskType ev)
 {
   if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START))
@@ -154,34 +150,30 @@ void Com_Handler_StartupListen(EventMaskType ev)
   }
   if (MyID == 0)
   {
-    // TODO Implement switch to master mode
-  }
-  if (cycles > 16*4)
-  {
-    // Should wait + Random(17) but dunno how
-    if (Com_NetworkExists() == 1)
-    {
-      master = 0;
       mainstate = MAIN_STATE_INIT_CHILD;
-    }
-    else
-    {
-      master = 1;
-      mainstate = MAIN_STATE_INIT_MASTER;
-    }
   }
+  else
+  {
+      mainstate = MAIN_STATE_INIT_MASTER;
+  }
+}
+
+void Com_Handler_StartupMaster(EventMaskType ev)
+{
+  //TODO Implement
+  mainstate = MAIN_STATE_COM;
+}
+
+void Com_Handler_StartupChild(EventMaskType ev)
+{
+  //TODO Implement
+  mainstate = MAIN_STATE_COM;
 }
 
 // only for own temperature because of main does this job
 void Com_FlagDataForSend(uint8_t index)
 {
   if (index < 64) Com_States[index] |= NEWDATABIT_MASK;
-}
-
-uint8_t Com_NetworkExists()
-{
-  // TODO: Implement;
-  return 0;
 }
 
 void Com_Init()
