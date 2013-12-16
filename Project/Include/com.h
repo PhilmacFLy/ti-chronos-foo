@@ -8,6 +8,7 @@
 # define __COM_H__
 
 # include "event.h"
+# include "scheduler.h"
 
 /*
   8 Bit:

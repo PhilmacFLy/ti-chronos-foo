@@ -16,6 +16,7 @@
 ******************************************************************************/
 
 #include "includes.h"
+#include "com.h"
 #include "transceiver.h"
 
 #define  PACKET_LEN         (0x05)	    // PACKET_LEN <= 61
@@ -116,6 +117,20 @@ uint8_t ReadRxData(uint8_t* buffer)
 #pragma vector=CC1101_VECTOR
 __interrupt void CC1101_ISR(void)
 {
+  volatile uint8_t val = RF1AIV;
+  if (20 == val) // RFIFG9
+  {
+    // brackets necessary because of macro implementation of Com functions
+    if (trcv_state == TRCV_STATE_RX)
+    {
+      Com_RxIndication();
+    }
+    else if (trcv_state == TRCV_STATE_TX)
+    {
+      Com_TxConfirmation();
+    }
+  }
+  /*
   switch(__even_in_range(RF1AIV,32))        // Prioritizing Radio Core Interrupt 
   {
     case  0: break;                         // No RF core interrupt pending                                            
@@ -158,5 +173,6 @@ __interrupt void CC1101_ISR(void)
     case 30: break;                         // RFIFG14
     case 32: break;                         // RFIFG15
   }  
-  __bic_SR_register_on_exit(LPM3_bits);     
+  __bic_SR_register_on_exit(LPM3_bits);
+  */
 }
