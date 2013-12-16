@@ -121,9 +121,9 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
           // formula datalen -> transmission time
           // 4 Byte preamble, 2 Byte additional data
           // Anzahl Bits = ((x + 4) * 8)
-          // Übertragungszeit in s = ((x + 4) * 8) / 38383 s
+          // Uebertragungszeit in s = ((x + 4) * 8) / 38383 s
           // 1 microtick ~ 8 us
-          // Übertragungszeit in microticks = ((x + 4) * 8) * 250000 / 38383
+          // Uebertragungszeit in microticks = ((x + 4) * 8) * 250000 / 38383
           // (x + 4) * 2000000 / 38383 ~ (x + 4) * 52106 / 1000
           uint8_t len = ReadRxData((uint8_t*)0); // no data necessary ATM
           uint16_t resyncoffset = ((len + 4) * 52106) / 1000;
