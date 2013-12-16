@@ -144,7 +144,8 @@ int main(void)
     if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START) ||
         EVENT_COM_SLOT_RX_START == (ev & EVENT_COM_SLOT_RX_START) ||
         EVENT_COM_SLOT_TX_START == (ev & EVENT_COM_SLOT_TX_START) ||
-        EVENT_COM_SLOT_RX_TX_SYNC == (ev & EVENT_COM_SLOT_RX_TX_SYNC))
+        EVENT_COM_SLOT_RX_TX_SYNC == (ev & EVENT_COM_SLOT_RX_TX_SYNC) ||
+        EVENT_TRCV_RX_EVENT == (ev & EVENT_TRCV_RX_EVENT))
     {
       // no clearing in here, will be done in subhandlers
       Com_Handler(ev);
