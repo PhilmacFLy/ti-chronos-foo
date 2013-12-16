@@ -42,14 +42,8 @@ void Radio_Init( void )
   // Increase PMMCOREV level to 2 for proper radio operation
   SetVCore(2);                            
   
-  ResetRadioCore();     
-  InitRadio();
-    
-  ReceiveOff(); // default to OFF
-}
-
-void InitRadio(void)
-{
+  ResetRadioCore(); 
+  
   // Set the High-Power Mode Request Enable bit so LPM3 can be entered
   // with active radio enabled 
   PMMCTL0_H = 0xA5;
@@ -59,6 +53,8 @@ void InitRadio(void)
   WriteRfSettings(&rfSettings);
   
   WriteSinglePATable(PATABLE_VAL);
+  
+  ReceiveOff(); // default to OFF
 }
 
 
