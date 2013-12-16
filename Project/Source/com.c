@@ -1,4 +1,4 @@
-﻿
+
 /*
   Filename: com.c
   Description: This file contains basically the communication related code.
@@ -128,7 +128,6 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
           uint8_t len = ReadRxData((uint8_t*)0); // no data necessary ATM
           uint16_t resyncoffset = ((len + 4) * 52106) / 1000;
           Timer_CorrectSync(MICROTICK_TX_START + 0x18 + resyncoffset); // TODO: recalculate 0x18 (code execution time)
-          //Timer_CorrectSync(MICROTICK_TX_START + 0x05);
           // TODO: Recalculate resync position
           ReceiveOff(); // turn off TRCV
         }
@@ -151,7 +150,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
               val += ((uint16_t) RxBuffer[i * 3 + 4]);
               cnt = RxBuffer[i * 3 + 5];
               Data_SetValue(idx, val, cnt);       // save this value
-              Com_States[idx] |= NEWDATABIT_MASK; // mark as new data, to send it
+              Com_FlagDataForSend(idx); // mark as new data, to send it
             }
           }
         }
@@ -231,14 +230,4 @@ void Com_Start(uint8_t slot)
 {
   CurrentSlot = slot;
   // start timer?
-}
-
-void Com_RxIndication()
-{
-
-}
-
-void Com_TxConfirmation()
-{
-
 }

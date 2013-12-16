@@ -35,6 +35,12 @@
 
 # define NEWDATABIT_MASK        (0x80u) // this bit is used to indicate the next-to-send stuff
 
+// as macro for performance in ISRs
+# define Com_RxIndication()     SetEvent(EVENT_TRCV_RX_EVENT); \
+                                LeaveSleep()
+
+# define Com_TxConfirmation()   LeaveSleep()
+                                  
 void Com_Handler(EventMaskType ev);
 void Com_Handler_NormalCommunication(EventMaskType ev);
 void Com_Handler_StartupListen(EventMaskType ev);
@@ -42,9 +48,5 @@ void Com_Handler_StartupMaster(EventMaskType ev);
 void Com_Handler_StartupChild(EventMaskType ev);
 void Com_Init();
 void Com_FlagDataForSend(uint8_t index);
-
-void Com_RxIndication();
-
-void Com_TxConfirmation();
 
 #endif /* __COM_H__ */
