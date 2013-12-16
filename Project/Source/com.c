@@ -38,11 +38,7 @@ void Com_Handler(EventMaskType ev)
     Com_Handler_StartupChild,
     Com_Handler_NormalCommunication
   };
-  ComHandlerFktPtrType ComHandlerFktPtr = ComHandlerFktTable[mainstate];
-  if (ComHandlerFktPtr != (ComHandlerFktPtrType)0)
-  {
-    ComHandlerFktPtr(ev);
-  }
+  (ComHandlerFktTable[mainstate])(ev);
   */
   switch(mainstate)
   {
@@ -141,7 +137,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
           // (x + 4) * 2000000 / 38383 ~ (x + 4) * 52106 / 1000
           uint8_t len = ReadRxData((uint8_t*)0); // no data necessary ATM
           uint16_t resyncoffset = ((len + 4) * 52106) / 1000;
-          Timer_CorrectSync(MICROTICK_TX_START + 0x18 + resyncoffset); // TODO: recalculate 0x18 (code execution time)
+          Timer_CorrectSync(MICROTICK_TX_START + 0x30 + resyncoffset); // TODO: recalculate 0x30 (code execution time)
           ReceiveOff(); // turn off TRCV
         }
         else
@@ -163,7 +159,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
               val += ((uint16_t) RxBuffer[i * 3 + 4]);
               cnt = RxBuffer[i * 3 + 5];
               Data_SetValue(idx, val, cnt);       // save this value
-              Com_FlagDataForSend(idx); // mark as new data, to send it
+              if (Data_GetCount(idx) == cnt) Com_FlagDataForSend(idx); // if new data, mark it for sending
             }
           }
         }
@@ -233,7 +229,6 @@ void Com_Handler_StartupChild(EventMaskType ev)
   mainstate = MAIN_STATE_COM;
 }
 
-// only for own temperature because of main does this job
 void Com_FlagDataForSend(uint8_t index)
 {
   if (index < 64) Com_States[index] |= NEWDATABIT_MASK;
