@@ -201,11 +201,13 @@ void Com_Handler_StartupListen(EventMaskType ev)
   }
   if (MyID == 0)
   {
-      mainstate = MAIN_STATE_INIT_CHILD;
+    mainstate = MAIN_STATE_INIT_MASTER;
   }
   else
   {
-      mainstate = MAIN_STATE_INIT_MASTER;
+    // TODO: Listen, if there is already a network
+    // if no network found, sleep for some time? or wait for button press?
+    mainstate = MAIN_STATE_INIT_CHILD;
   }
 }
 
