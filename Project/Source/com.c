@@ -75,29 +75,34 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
     if (currentcomstate == COM_MODE_TX)
     {
       // Prepare TX Data for Send and give it to driver
-      uint8_t i = 0;
       uint8_t TxCount = 3;
       TxBuffer[0] = MyID;
       TxBuffer[1] = DistanceToMaster;
       TxBuffer[2] = NumChildren;
-      if (MyID == 0) // master doesn't sends data out currently
+      if (MyID != 0) // master doesn't sends data out currently
       {
-        for (i = 0; i < 16; i++) // max 16 values
+        uint8_t numvals = 0; // counting variable for number of sent datas
+        uint8_t i = 0; // helping var to only search over all values once
+        uint8_t idx;
+        uint16_t val;
+        uint8_t cnt;
+        while(i < 64 && numvals < 16)
         {
-          uint8_t idx = LastSentData + i;
-          if ( ((Com_States[idx] & NEWDATABIT_MASK) == NEWDATABIT_MASK)
-            || ((Com_States[idx] & TIMEOUT_MASK) == TIMEOUT_VALUE) )
+          idx = LastSentData;
+          if ( ((Com_States[idx] & NEWDATABIT_MASK) == NEWDATABIT_MASK) || ((Com_States[idx] & TIMEOUT_MASK) == TIMEOUT_VALUE) )
           {
-            uint16_t val = Data_GetValue(LastSentData + i);
-            uint8_t cnt = Data_GetCount(LastSentData + i);
+            val = Data_GetValue(idx);
+            cnt = Data_GetCount(idx);
             // mask a little bit to need not so much bytes
             if (val != INVALID_VALUE)
             {
+              // zipping of data
               TxBuffer[TxCount++] = (idx << 2) | ((uint8_t) (val >> 8));
               TxBuffer[TxCount++] = (uint8_t) (0xFF & val);
               TxBuffer[TxCount++] = cnt;
-              // clear newdatabit mask and timeout counter
+              // clear newdatabit mask and timeout counter by ANDing with the mode mask
               Com_States[idx] = Com_States[idx] & COM_MODE_MASK;
+              numvals++;
             }
           }
           else
@@ -106,8 +111,10 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
             // yeah, probably improvable...
             Com_States[idx] = (Com_States[idx] & ~(TIMEOUT_MASK)) | ((Com_States[idx] + 1) & TIMEOUT_MASK);
           }
+          
+          i++;
+          LastSentData = (LastSentData + 1) % 64; // this way, because it is possible to only iterate over <64 nodes (fairness)
         }
-        LastSentData = (LastSentData + 16) % 64;
       }
       PrepareTransmit(TxBuffer, TxCount);
     }
