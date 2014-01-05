@@ -26,20 +26,24 @@ uint8_t TxCount;
 uint8_t RxBuffer[64];
 
 uint8_t mainstate = MAIN_STATE_INIT;
-uint8_t cycles = 0;
+uint16_t cycles = 0;
+
+static uint8_t best_id = 0xFF;
 
 void Com_Handler(EventMaskType ev)
 {
   /*
   typedef void (*ComHandlerFktPtrType)(EventMaskType)
-  const ComHandlerFktPtrType ComHandlerFktTable[4] = {
-    Com_Handler_StartupListen,
-    Com_Handler_StartupMaster,
-    Com_Handler_StartupChild,
-    Com_Handler_NormalCommunication
+  const ComHandlerFktPtrType ComHandlerFktTable[5] = {
+    Com_Handler_StartupListen,       // MAIN_STATE_INIT
+    Com_Handler_StartupMaster,       // MAIN_STATE_INIT_MASTER
+    Com_Handler_StartupChild,        // MAIN_STATE_INIT_CHILD
+    Com_Handler_NormalCommunication, // MAIN_STATE_COM
+	  Com_Handler_SyncupChild          // MAIN_STATE_COM_SYNCUP
   };
   (ComHandlerFktTable[mainstate])(ev);
   */
+  
   switch(mainstate)
   {
     case MAIN_STATE_INIT:
@@ -54,6 +58,9 @@ void Com_Handler(EventMaskType ev)
     case MAIN_STATE_COM:
       Com_Handler_NormalCommunication(ev);
       break;
+	  case MAIN_STATE_COM_SYNCUP:
+	    Com_Handler_SyncupChild(ev);
+	    break;
   }
 }
 
@@ -143,7 +150,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
           // Uebertragungszeit in microticks = ((x + 4) * 8) * 250000 / 38383
           // (x + 4) * 2000000 / 38383 ~ (x + 4) * 52106 / 1000
           uint8_t len = ReadRxData((uint8_t*)0); // no data necessary ATM
-          uint16_t resyncoffset = ((len + 4) * 52106) / 1000;
+          uint16_t resyncoffset = (((uint16_t)len + 4) * 52106) / 1000;
           Timer_CorrectSync(MICROTICK_TX_START + 0x30 + resyncoffset); // TODO: recalculate 0x30 (code execution time)
           ReceiveOff(); // turn off TRCV
         }
@@ -193,34 +200,73 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
     
   if (EVENT_COM_SLOT_RX_TX_SYNC == (ev & EVENT_COM_SLOT_RX_TX_SYNC))
   {
+    EventMaskType trcvev; // needed below
+    uint8_t len;
+    
+    // clarification: only one new connection is accepted. if multiple nodes
+    // want to sync up, the others won't get a ACK packet and have to retry it.
     ClearEvent(EVENT_COM_SLOT_RX_TX_SYNC);
     
-    // TODO: MAKE SYNC STUFF for new nodes
+    ReceiveOn(); // start RX
+    Timer_Delay(30000); // wait 30 ms for the syncup package
+    trcvev = GetEvent(EVENT_TRCV_RX_EVENT);
+    ClearEvent(EVENT_TRCV_RX_EVENT);
+    if (trcvev == EVENT_TRCV_RX_EVENT)
+    {
+      len = ReadRxData(RxBuffer);
+      // TODO check rx data for correctness?
+      ReceiveOff();
+      
+      // answer with sync ack
+      // first byte: own id + 0xC0, second byte: partner id
+      TxBuffer[0] = MyID |= 0xC0;
+      TxBuffer[1] = RxBuffer[0] & 0x3F; // read partner id from rx buffer
+      PrepareTransmit(TxBuffer, 2);
+      StartTransmit();
+      EnterSleep(); // necessary, because transceiver wakes up after transmission
+      
+      // made this way, so if a client sends multiple times and doesn't receives
+      // the acks
+      Com_States[RxBuffer[0] & 0x3F] &= ~(COM_MODE_MASK);
+      Com_States[RxBuffer[0] & 0x3F] |= COM_MODE_CHILD_RX;
+    }
+    ReceiveOff(); // probably better with else, but dunno because of more
+                  // complicated if case
   }
 }
 
 void Com_Handler_StartupListen(EventMaskType ev)
 {
+  if (MyID == 0)
+  {
+    SetMainState(MAIN_STATE_INIT_MASTER);
+	  return;
+  }
+  
+  ReceiveOn();
+  
   if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START))
   {
     ClearEvent(EVENT_COM_SLOT_START);
     cycles++;
+	  if (cycles == 64)
+	  {
+	    ReceiveOff();
+	    // TODO: wait for X seconds
+	  }
   }
-  if (MyID == 0)
+  
+  if (EVENT_TRCV_RX_EVENT == (ev & EVENT_TRCV_RX_EVENT))
   {
-    mainstate = MAIN_STATE_INIT_MASTER;
-  }
-  else
-  {
-    // TODO: Listen, if there is already a network
-    // if no network found, sleep for some time? or wait for button press?
-    mainstate = MAIN_STATE_INIT_CHILD;
+    ClearEvent(EVENT_TRCV_RX_EVENT);
+    ReceiveOff();
+    SetMainState(MAIN_STATE_INIT_CHILD);
   }
 }
 
 void Com_Handler_StartupMaster(EventMaskType ev)
 {
-  if ((EVENT_COM_SLOT_START & ev) == EVENT_COM_SLOT_START)
+  if (EVENT_COM_SLOT_START == (EVENT_COM_SLOT_START & ev))
   {
     ClearEvent(EVENT_COM_SLOT_START);
     CurrentSlot = 0;
@@ -228,14 +274,107 @@ void Com_Handler_StartupMaster(EventMaskType ev)
     Timer_Stop();
     Timer_Start(0); // startpoint not relevant because master
     Timer_SetMode(COM_MODE_TX);
-    mainstate = MAIN_STATE_COM;
+    SetMainState(MAIN_STATE_COM);
   }
 }
 
 void Com_Handler_StartupChild(EventMaskType ev)
 {
-  //TODO Implement
-  mainstate = MAIN_STATE_COM;
+  // best_id is global var
+  static uint8_t best_distance = 0xFF;
+  static uint8_t best_numchilds = 0xFF;
+  
+  ReceiveOn();
+  
+  if (EVENT_COM_SLOT_START == (EVENT_COM_SLOT_START & ev))
+  {
+    ClearEvent(EVENT_COM_SLOT_START);
+    cycles++;
+	  CurrentSlot = (CurrentSlot + 1) % 64;
+  }
+  
+  if (EVENT_TRCV_RX_EVENT == (ev & EVENT_TRCV_RX_EVENT))
+  {
+    uint8_t rx_id;
+	  uint8_t rx_distance;
+	  uint8_t rx_numchilds;
+    uint8_t len = ReadRxData(RxBuffer);
+    ClearEvent(EVENT_TRCV_RX_EVENT);
+    rx_id = RxBuffer[0];
+    rx_distance = RxBuffer[1];
+    rx_numchilds = RxBuffer[2];
+	
+	if ((rx_distance < best_distance) && (rx_numchilds < best_numchilds))
+	{
+	  uint16_t resyncoffset;
+	  best_id = rx_id;
+    best_distance = rx_distance;
+    best_numchilds = rx_numchilds;
+		
+    // calculation from normal handler
+    resyncoffset = (((uint16_t)len + 4) * 52106) / 1000;
+    Timer_CorrectSync(MICROTICK_TX_START + 0x30 + resyncoffset); // TODO: recalculate 0x30 (code execution time)
+	}
+	
+	if (CurrentSlot != rx_id) CurrentSlot = rx_id; // to sync the node number / cycle position
+  }
+  
+  if (cycles == 256)
+  {
+    ReceiveOff();
+	  SetMainState(MAIN_STATE_COM_SYNCUP);
+  }
+}
+
+void Com_Handler_SyncupChild(EventMaskType ev)
+{
+  if (EVENT_COM_SLOT_START == (EVENT_COM_SLOT_START & ev))
+  {
+    ClearEvent(EVENT_COM_SLOT_START);
+    
+    CurrentSlot = (CurrentSlot + 1) % 64;
+    if (CurrentSlot == best_id) Timer_SetMode(COM_MODE_MYSYNCSLOT);
+    else Timer_SetMode(COM_MODE_IGNORE);
+  }
+  
+  if (EVENT_COM_SLOT_RX_TX_SYNC == (ev & EVENT_COM_SLOT_RX_TX_SYNC))
+  {
+    EventMaskType trcvev; // needed below
+    uint8_t len; // also needed below
+    
+    ClearEvent(EVENT_COM_SLOT_RX_TX_SYNC);
+    
+    // send sync message (mynode id |= 0x80) in the proper slot, but wait first a little bit
+    // not the best solution, probably change later
+    // if receiving ack after that, goto normal communication
+    Timer_Delay(10000); // wait about 10 ms
+    
+    // transmit syncup package (first byte: myid + 0x80, second byte: partner id)
+    TxBuffer[0] = MyID | 0x80;
+    TxBuffer[1] = best_id;
+    PrepareTransmit(TxBuffer, 2);
+    StartTransmit();
+    EnterSleep(); // wait for TX done
+    
+    ReceiveOn(); // TX done, start RX
+    Timer_Delay(10000);// wait another 10 ms or for rx event
+    
+    trcvev = GetEvent(EVENT_TRCV_RX_EVENT);
+    ClearEvent(EVENT_TRCV_RX_EVENT);
+    if (trcvev == EVENT_TRCV_RX_EVENT)
+    {
+      len = ReadRxData(RxBuffer);
+      // ack could be for another node, so check the complete message
+      if (len == 2 && RxBuffer[0] == (best_id | 0xC0) && RxBuffer[1] == MyID)
+      {
+        Com_States[best_id] |= COM_MODE_PARENT_RX;
+        SetMainState(MAIN_STATE_COM); // WOOHOO! we got it!
+      }
+    }
+    else ReceiveOff(); // in the if case, the SetMainState handles ReceiveOff!
+  }
+  
+  SetMainState(MAIN_STATE_COM);
 }
 
 void Com_FlagDataForSend(uint8_t index)
@@ -248,11 +387,5 @@ void Com_Init()
   uint8_t i;
   for(i = 0; i < 64; i++) Com_States[i] = 0;
   Com_States[MyID] |= COM_MODE_TX;
-  mainstate = MAIN_STATE_INIT;
-}
-
-void Com_Start(uint8_t slot)
-{
-  CurrentSlot = slot;
-  // start timer?
+  SetMainState(MAIN_STATE_INIT);
 }

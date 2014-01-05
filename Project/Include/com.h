@@ -47,6 +47,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev);
 void Com_Handler_StartupListen(EventMaskType ev);
 void Com_Handler_StartupMaster(EventMaskType ev);
 void Com_Handler_StartupChild(EventMaskType ev);
+void Com_Handler_SyncupChild(EventMaskType ev);
 void Com_Init();
 void Com_FlagDataForSend(uint8_t index);
 
