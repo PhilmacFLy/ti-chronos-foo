@@ -27,6 +27,7 @@ uint8_t RxBuffer[64];
 
 uint8_t mainstate = MAIN_STATE_INIT;
 uint16_t slotcounter = 0;
+uint16_t idletime = 300 * 4; // 300 seconds
 
 static uint8_t best_id = 0xFF;
 
@@ -68,8 +69,8 @@ void Com_Handler(EventMaskType ev)
   }
 }
 
-// not yet finished
-// handles all communication specific stuff
+// handles the normal communication and the opening of the rx timeframe for
+// new nodes
 void Com_Handler_NormalCommunication(EventMaskType ev)
 {
   // next cycle, so dispatch this here
@@ -185,6 +186,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
       else
       {
         // TODO: Timeout of message?
+        // later probably widening the RX window
         ReceiveOff(); // turn off TRCV
       }
     }
@@ -242,6 +244,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
   }
 }
 
+// simply listens if there is a network existing
 void Com_Handler_StartupListen(EventMaskType ev)
 {
   if (MyID == 0)
@@ -259,8 +262,7 @@ void Com_Handler_StartupListen(EventMaskType ev)
 	  if (slotcounter == 64)
 	  {
 	    ReceiveOff();
-	    // TODO: wait for X seconds or wait for button press?
-      // statechange!
+	    SetMainState(MAIN_STATE_IDLE); // wait a specific time until retry
 	  }
   }
   
@@ -273,6 +275,7 @@ void Com_Handler_StartupListen(EventMaskType ev)
   }
 }
 
+// simply starts a network
 void Com_Handler_StartupMaster(EventMaskType ev)
 {
   if (EVENT_COM_SLOT_START == (EVENT_COM_SLOT_START & ev))
@@ -288,6 +291,7 @@ void Com_Handler_StartupMaster(EventMaskType ev)
   else Timer_SetMode(COM_MODE_IGNORE);
 }
 
+// listens to the network and decides which node is probably the best
 void Com_Handler_StartupChild(EventMaskType ev)
 {
   // best_id is global var
@@ -338,6 +342,8 @@ void Com_Handler_StartupChild(EventMaskType ev)
   }
 }
 
+// this handler waits until the slot of the parent node and trys to send this node
+// a sync message and expects a response
 void Com_Handler_SyncupChild(EventMaskType ev)
 {
   if (EVENT_COM_SLOT_START == (EVENT_COM_SLOT_START & ev))
@@ -389,10 +395,18 @@ void Com_Handler_SyncupChild(EventMaskType ev)
   SetMainState(MAIN_STATE_COM);
 }
 
+// this handler handles the idle time between 2 trys to find the network
 void Com_Handler_Idle(EventMaskType ev)
 {
   Timer_SetMode(COM_MODE_IGNORE);
-  // TODO implement
+  if (idletime == slotcounter)
+  {
+    idletime = idletime * 2;
+    if (idletime > 3600 * 4) idletime = 3600 * 4; // max 1 hour
+    SetMainState(MAIN_STATE_INIT);
+    return;
+  }
+  slotcounter++;
 }
 
 void Com_FlagDataForSend(uint8_t index)
