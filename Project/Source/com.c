@@ -26,7 +26,7 @@ uint8_t TxCount;
 uint8_t RxBuffer[64];
 
 uint8_t mainstate = MAIN_STATE_INIT;
-uint16_t cycles = 0;
+uint16_t slotcounter = 0;
 
 static uint8_t best_id = 0xFF;
 
@@ -34,12 +34,13 @@ void Com_Handler(EventMaskType ev)
 {
   /*
   typedef void (*ComHandlerFktPtrType)(EventMaskType)
-  const ComHandlerFktPtrType ComHandlerFktTable[5] = {
+  const ComHandlerFktPtrType ComHandlerFktTable[6] = {
     Com_Handler_StartupListen,       // MAIN_STATE_INIT
     Com_Handler_StartupMaster,       // MAIN_STATE_INIT_MASTER
     Com_Handler_StartupChild,        // MAIN_STATE_INIT_CHILD
     Com_Handler_NormalCommunication, // MAIN_STATE_COM
-	  Com_Handler_SyncupChild          // MAIN_STATE_COM_SYNCUP
+	  Com_Handler_SyncupChild,         // MAIN_STATE_COM_SYNCUP
+    Com_Handler_Idle                 // MAIN_STATE_IDLE
   };
   (ComHandlerFktTable[mainstate])(ev);
   */
@@ -61,6 +62,9 @@ void Com_Handler(EventMaskType ev)
 	  case MAIN_STATE_COM_SYNCUP:
 	    Com_Handler_SyncupChild(ev);
 	    break;
+    case MAIN_STATE_IDLE:
+      Com_Handler_Idle(ev);
+      break;
   }
 }
 
@@ -227,7 +231,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
       
       // made this way, so if a client sends multiple times and doesn't receives
       // the acks
-      if (Com_States[RxBuffer[0] & 0x3F] == COM_MODE_IGNORE)
+      if ((Com_States[RxBuffer[0] & 0x3F] & COM_MODE_MASK) == COM_MODE_IGNORE)
       {
         Com_States[RxBuffer[0] & 0x3F] |= COM_MODE_CHILD_RX;
         NumChildren++;
@@ -251,16 +255,18 @@ void Com_Handler_StartupListen(EventMaskType ev)
   if (EVENT_COM_SLOT_START == (ev & EVENT_COM_SLOT_START))
   {
     ClearEvent(EVENT_COM_SLOT_START);
-    cycles++;
-	  if (cycles == 64)
+    slotcounter++;
+	  if (slotcounter == 64)
 	  {
 	    ReceiveOff();
-	    // TODO: wait for X seconds
+	    // TODO: wait for X seconds or wait for button press?
+      // statechange!
 	  }
   }
   
   if (EVENT_TRCV_RX_EVENT == (ev & EVENT_TRCV_RX_EVENT))
   {
+    // network is existing, start measuring the best possible communication partner
     ClearEvent(EVENT_TRCV_RX_EVENT);
     ReceiveOff();
     SetMainState(MAIN_STATE_INIT_CHILD);
@@ -279,6 +285,7 @@ void Com_Handler_StartupMaster(EventMaskType ev)
     Timer_SetMode(COM_MODE_TX);
     SetMainState(MAIN_STATE_COM);
   }
+  else Timer_SetMode(COM_MODE_IGNORE);
 }
 
 void Com_Handler_StartupChild(EventMaskType ev)
@@ -292,7 +299,7 @@ void Com_Handler_StartupChild(EventMaskType ev)
   if (EVENT_COM_SLOT_START == (EVENT_COM_SLOT_START & ev))
   {
     ClearEvent(EVENT_COM_SLOT_START);
-    cycles++;
+    slotcounter++;
 	  CurrentSlot = (CurrentSlot + 1) % 64;
   }
   
@@ -324,7 +331,7 @@ void Com_Handler_StartupChild(EventMaskType ev)
 	if (CurrentSlot != rx_id) CurrentSlot = rx_id; // to sync the node number / cycle position
   }
   
-  if (cycles == 256)
+  if (slotcounter == 256)
   {
     ReceiveOff();
 	  SetMainState(MAIN_STATE_COM_SYNCUP);
@@ -380,6 +387,12 @@ void Com_Handler_SyncupChild(EventMaskType ev)
   }
   
   SetMainState(MAIN_STATE_COM);
+}
+
+void Com_Handler_Idle(EventMaskType ev)
+{
+  Timer_SetMode(COM_MODE_IGNORE);
+  // TODO implement
 }
 
 void Com_FlagDataForSend(uint8_t index)

@@ -12,10 +12,11 @@
 # define MAIN_STATE_INIT_MASTER		(1)
 # define MAIN_STATE_INIT_CHILD		(2)
 # define MAIN_STATE_COM	        	(3)
- #define MAIN_STATE_COM_SYNCUP    (4)
+# define MAIN_STATE_COM_SYNCUP    (4)
+# define MAIN_STATE_IDLE          (5)
 
 #define SetMainState(newstate) ClearEvent(~((EventMaskType)0)); \
-                               cycles = 0; \
+                               slotcounter = 0; \
                                mainstate = (newstate);
                               
 extern uint8_t MyID;
