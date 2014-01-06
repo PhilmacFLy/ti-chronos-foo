@@ -376,7 +376,7 @@ void Com_Handler_SyncupChild(EventMaskType ev)
         SetMainState(MAIN_STATE_COM); // WOOHOO! we got it!
       }
     }
-    else ReceiveOff(); // in the if case, the SetMainState handles ReceiveOff!
+    ReceiveOff(); // in the if case, the SetMainState handles ReceiveOff!
   }
   
   SetMainState(MAIN_STATE_COM);
