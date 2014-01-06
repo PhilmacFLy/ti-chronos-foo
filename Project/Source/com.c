@@ -224,11 +224,14 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
       PrepareTransmit(TxBuffer, 2);
       StartTransmit();
       EnterSleep(); // necessary, because transceiver wakes up after transmission
-      NumChildren++;
+      
       // made this way, so if a client sends multiple times and doesn't receives
       // the acks
-      Com_States[RxBuffer[0] & 0x3F] &= ~(COM_MODE_MASK);
-      Com_States[RxBuffer[0] & 0x3F] |= COM_MODE_CHILD_RX;
+      if (Com_States[RxBuffer[0] & 0x3F] == COM_MODE_IGNORE)
+      {
+        Com_States[RxBuffer[0] & 0x3F] |= COM_MODE_CHILD_RX;
+        NumChildren++;
+      }
     }
     ReceiveOff(); // probably better with else, but dunno because of more
                   // complicated if case
