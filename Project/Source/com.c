@@ -224,7 +224,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
       PrepareTransmit(TxBuffer, 2);
       StartTransmit();
       EnterSleep(); // necessary, because transceiver wakes up after transmission
-      
+      NumChildren++;
       // made this way, so if a client sends multiple times and doesn't receives
       // the acks
       Com_States[RxBuffer[0] & 0x3F] &= ~(COM_MODE_MASK);
@@ -311,6 +311,8 @@ void Com_Handler_StartupChild(EventMaskType ev)
     best_distance = rx_distance;
     best_numchilds = rx_numchilds;
 		
+    DistanceToMaster = best_distance + 1;
+    
     // calculation from normal handler
     resyncoffset = (((uint16_t)len + 4) * 52106) / 1000;
     Timer_CorrectSync(MICROTICK_TX_START + 0x30 + resyncoffset); // TODO: recalculate 0x30 (code execution time)
