@@ -12,6 +12,7 @@
 #include "temperature.h"
 #include "transceiver.h"
 #include "scheduler.h"
+#include "display.h"
 #include "com.h"
 
 uint8_t Com_States[64];
@@ -82,12 +83,13 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
   {
     ClearEvent(EVENT_COM_SLOT_START);
     
+    Display_SetShowTemperature(); // moep
     Timer_SetMode(currentcomstate); // enable/disable my necessary interrupts
     
     if (currentcomstate == COM_MODE_TX)
     {
       // Prepare TX Data for Send and give it to driver
-      uint8_t TxCount = 3;
+      TxCount = 3;
       TxBuffer[0] = MyID;
       TxBuffer[1] = DistanceToMaster;
       TxBuffer[2] = NumChildren;
@@ -178,7 +180,7 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
               val += ((uint16_t) RxBuffer[i * 3 + 4]);
               cnt = RxBuffer[i * 3 + 5];
               Data_SetValue(idx, val, cnt);       // save this value
-              if (Data_GetCount(idx) == cnt) Com_FlagDataForSend(idx); // if new data, mark it for sending
+              /*if (Data_GetCount(idx) == cnt)*/ Com_FlagDataForSend(idx); // if new data, mark it for sending
             }
           }
         }

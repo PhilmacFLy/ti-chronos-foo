@@ -15,7 +15,7 @@ uint8_t Data_SetValue(uint8_t index, uint16_t value, uint8_t count)
 {
   if (index < 64)
   {
-    if (datacount[index] < count || (datacount[index] > 220 && count < 30))
+    //if (datacount[index] < count || (datacount[index] > 220 && count < 30))
     {
       data[index] = value;
       datacount[index] = count;

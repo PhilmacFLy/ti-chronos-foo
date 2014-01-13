@@ -73,6 +73,7 @@
 
 void Display_ShowStringSync();
 void Display_ShowSetID(uint8_t index);
+void Display_SetShowTemperature();
 void Display_ShowTemperature(uint16_t value, uint8_t index);
 
 void Display_Init();

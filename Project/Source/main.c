@@ -69,11 +69,14 @@ void InitID()
     EnterSleep(); // wait for a timed event, exact timing not really necessary here
     ev = GetAllEvents();
     ClearEvent(~0); // to clear all events at once, however not perfect code :/
-    if (EVENT_BUTTON_NUM == (ev & EVENT_BUTTON_NUM)) OKpressed = 1; // dispatch here
-    if (EVENT_DISPLAY_TICK == (ev & EVENT_DISPLAY_TICK)) Display_Handler(ev);
+    if (EVENT_BUTTON_NUM == (ev & EVENT_BUTTON_NUM))
+      OKpressed = 1; // dispatch here
+    if (EVENT_DISPLAY_TICK == (ev & EVENT_DISPLAY_TICK))
+      Display_Handler(ev);
   }
   
   Flash_Write(&MyID, 1);
+  Display_ShowStringSync();
 }
 
 int main(void)
