@@ -83,7 +83,6 @@ void Com_Handler_NormalCommunication(EventMaskType ev)
   {
     ClearEvent(EVENT_COM_SLOT_START);
     
-    Display_SetShowTemperature(); // moep
     Timer_SetMode(currentcomstate); // enable/disable my necessary interrupts
     
     if (currentcomstate == COM_MODE_TX)
@@ -289,6 +288,7 @@ void Com_Handler_StartupMaster(EventMaskType ev)
     Timer_Start(0); // startpoint not relevant because master
     Timer_SetMode(COM_MODE_TX);
     SetMainState(MAIN_STATE_COM);
+    Display_SetShowTemperature(); // moep
   }
   else Timer_SetMode(COM_MODE_IGNORE);
 }
