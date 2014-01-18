@@ -1,4 +1,3 @@
-
 /*
   Filename: com.c
   Description: This file contains basically the communication related code.
@@ -260,19 +259,26 @@ void Com_Handler_StartupListen(EventMaskType ev)
   {
     ClearEvent(EVENT_COM_SLOT_START);
     slotcounter++;
-	  if (slotcounter == 64)
-	  {
-	    ReceiveOff();
-	    SetMainState(MAIN_STATE_IDLE); // wait a specific time until retry
-	  }
+    if (slotcounter == 64)
+    {
+      ReceiveOff();
+      SetMainState(MAIN_STATE_IDLE); // wait a specific time until retry
+    }
   }
   
   if (EVENT_TRCV_RX_EVENT == (ev & EVENT_TRCV_RX_EVENT))
   {
     // network is existing, start measuring the best possible communication partner
     ClearEvent(EVENT_TRCV_RX_EVENT);
-    ReceiveOff();
-    SetMainState(MAIN_STATE_INIT_CHILD);
+    (void) ReadRxData(RxBuffer); // len not really necessary
+    if ((RxBuffer[0] & 0xC0) == 0) // no sync messages!
+    {
+      if (RxBuffer[2] > 15) // max hops: 16
+      {
+        ReceiveOff();
+        SetMainState(MAIN_STATE_INIT_CHILD);
+      }
+    }
   }
 }
 
