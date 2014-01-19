@@ -1,4 +1,4 @@
-/
+/*
  Filename: transceiver.c
  Description: This file contains the code for the transceiver commands
  and settings.For specific register settings please refer to the comments 
