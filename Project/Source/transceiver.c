@@ -1,39 +1,19 @@
-/******************************************************************************
-* CC430 RF Code Example - TX and RX (variable packet length =< FIFO size)
-* 
-* Each device will transmit a small packet every 2 sec.  
-* 
-* The RF packet engine settings specify variable-length-mode with CRC check 
-* enabled. The RX packet also appends 2 status bytes regarding CRC check, RSSI 
-* and LQI info. For specific register settings please refer to the comments for 
-* each register in RfRegSettings.c, the CC430x613x User's Guide, and/or 
-* SmartRF Studio.
-* 
-* * M. Morales/D. Dang
-* Texas Instruments Inc.
-* June 2010
-* Built with IAR v4.21 and CCS v4.1
-******************************************************************************/
+/
+ Filename: transceiver.c
+ Description: This file contains the code for the transceiver commands
+ and settings.For specific register settings please refer to the comments 
+ for each register in RfRegSettings.c, the CC430x613x User's Guide, 
+ and/or SmartRF Studio.
+*/
 
 #include "includes.h"
 #include "com.h"
 #include "transceiver.h"
 
-//#define  PACKET_LEN         (0x05)	    // PACKET_LEN <= 61
-//#define  RSSI_IDX           (PACKET_LEN+1)  // Index of appended RSSI 
-//#define  CRC_LQI_IDX        (PACKET_LEN+2)  // Index of appended LQI, checksum
+
 #define  PATABLE_VAL        (0x51)          // 0 dBm output 
 
 extern RF_SETTINGS rfSettings;
-
-//unsigned char packetReceived;
-//unsigned char packetTransmit; 
-
-//unsigned char RxBuffer[64];
-//unsigned char RxBufferLength = 0;
-//const unsigned char TxBuffer[6]= {PACKET_LEN, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE};
-//unsigned char buttonPressed = 0;
-//unsigned int i = 0; 
 
 uint8_t trcv_state;
 
